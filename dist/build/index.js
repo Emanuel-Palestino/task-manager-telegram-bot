@@ -14,28 +14,22 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const dotenv_1 = __importDefault(require("dotenv"));
+const messages_1 = require("./utils/messages");
+// Config environment
 dotenv_1.default.config();
-const initialMessage = `
-Hello I will help you to managing tasks in your team.
-Firts, please added me to your team group. Then, use the command <b>/myteam</b> to register your team group.
-`;
-const teamAddedMessage = `
-The team has been added successfully.\n
-To start, please click the follow button to register in members list. This action is required just once.
-`;
 let members = [];
 const bot = new telegraf_1.Telegraf(process.env.TOKEN || '');
 bot.start((ctx) => __awaiter(void 0, void 0, void 0, function* () {
     let numMembers = yield ctx.getChatMembersCount();
     if (numMembers > 2)
         return ctx.deleteMessage(ctx.message.message_id);
-    return ctx.replyWithHTML(initialMessage);
+    return ctx.replyWithHTML(messages_1.initialMessage);
 }));
 bot.command('myteam', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     let numMembers = yield ctx.getChatMembersCount();
     if (numMembers == 2)
         return ctx.deleteMessage(ctx.message.message_id);
-    return ctx.replyWithHTML(teamAddedMessage, telegraf_1.Markup.inlineKeyboard([
+    return ctx.replyWithHTML(messages_1.teamAddedMessage, telegraf_1.Markup.inlineKeyboard([
         telegraf_1.Markup.button.callback('Join the team', 'join')
     ])).then(message => {
         bot.telegram.pinChatMessage(ctx.chat.id, message.message_id);

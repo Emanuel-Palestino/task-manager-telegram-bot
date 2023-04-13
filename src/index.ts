@@ -1,17 +1,9 @@
-import { Markup, Telegraf } from "telegraf"
+import { Markup, Telegraf } from 'telegraf'
 import dotenv from 'dotenv'
+import { initialMessage, teamAddedMessage } from './utils/messages'
 
+// Config environment
 dotenv.config()
-
-const initialMessage = `
-Hello I will help you to managing tasks in your team.
-Firts, please added me to your team group. Then, use the command <b>/myteam</b> to register your team group.
-`
-
-const teamAddedMessage = `
-The team has been added successfully.\n
-To start, please click the follow button to register in members list. This action is required just once.
-`
 
 let members: any[] = []
 
@@ -52,7 +44,7 @@ bot.command('/members', async ctx => {
 	let numMembers = await ctx.getChatMembersCount()
 	if (numMembers == 2)
 		return ctx.deleteMessage(ctx.message.message_id)
-	
+
 	return ctx.reply('Members:\n' + members.map(member => member.name).join('\n'))
 })
 

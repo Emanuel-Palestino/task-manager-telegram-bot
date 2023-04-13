@@ -4,6 +4,7 @@
   "description": "",
   "main": "index.ts",
   "scripts": {
+    "build": "tsc -w",
     "dev": "nodemon dist/build/index.js"
   },
   "author": "Emanuel Palestino",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "dotenv": "^16.0.1",
+    "firebase-admin": "^11.6.0",
     "telegraf": "^4.8.3"
   }
 }
