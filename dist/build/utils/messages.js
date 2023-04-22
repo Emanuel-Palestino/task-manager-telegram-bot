@@ -9,3 +9,6 @@ exports.teamAddedMessage = `
 The team has been added successfully.\n
 To start, please click the follow button to register in members list. This action is required just once.
 `;
+exports.testmsg = `
+this is a test message with command <b>/hola</b>
+`

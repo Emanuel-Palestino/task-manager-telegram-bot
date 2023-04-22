@@ -17,6 +17,7 @@
   "dependencies": {
     "dotenv": "^16.0.1",
     "firebase-admin": "^11.6.0",
+    "ng": "^0.0.0",
     "telegraf": "^4.8.3"
   }
 }
