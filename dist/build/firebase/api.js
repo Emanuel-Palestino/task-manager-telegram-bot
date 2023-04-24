@@ -9,8 +9,16 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createTask = void 0;
+exports.testGetInfo = exports.createTask = void 0;
+const setup_1 = require("./setup");
 const createTask = (idGroug, task) => __awaiter(void 0, void 0, void 0, function* () {
     return true;
 });
 exports.createTask = createTask;
+const testGetInfo = () => __awaiter(void 0, void 0, void 0, function* () {
+    const teamsSnapshot = yield setup_1.database.collection('team_groups').get();
+    const team_groups = teamsSnapshot.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));
+    console.log(team_groups);
+    return true;
+});
+exports.testGetInfo = testGetInfo;

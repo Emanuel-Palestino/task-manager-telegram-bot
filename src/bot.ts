@@ -1,5 +1,6 @@
 import { Markup, Telegraf } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
+import { testGetInfo } from './firebase/api'
 
 
 const bot = new Telegraf(process.env.TOKEN || '')
@@ -30,12 +31,17 @@ bot.action('join', ctx => {
 	return ctx.answerCbQuery('Welcome to the team!')
 })
 
-bot.command('/members', async ctx => {
+bot.command('members', async ctx => {
 	let numMembers = await ctx.getChatMembersCount()
 	if (numMembers == 2)
 		return ctx.deleteMessage(ctx.message.message_id)
 
 	return ctx.reply('Members:\n')
+})
+
+bot.command('test', async ctx => {
+	await testGetInfo()
+	return
 })
 
 
