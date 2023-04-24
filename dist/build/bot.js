@@ -39,7 +39,9 @@ bot.command('members', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     return ctx.reply('Members:\n');
 }));
 bot.command('test', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    yield (0, api_1.testGetInfo)();
-    return;
+    const response = yield (0, api_1.createTask)(ctx.chat.id, { title: 'Creada desde servidor', description: 'Tarea creada desde el servidor de pruebas' });
+    if (!response)
+        return console.log('No existe el grupo');
+    return console.log('agregado');
 }));
 exports.default = bot;

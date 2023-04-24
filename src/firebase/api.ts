@@ -1,6 +1,14 @@
 import { database } from './setup'
 
-export const createTask = async (idGroug: number, task: object): Promise<boolean> => {
+export const createTask = async (idTelegramGroup: number, task: object): Promise<boolean> => {
+	const teamGroupDoc = database.collection('team_groups').doc(`${String(idTelegramGroup)}`)
+	const teamGroupSnapshot = await teamGroupDoc.get()
+
+	// team group is no registered
+	if (!teamGroupSnapshot.exists)
+		return false
+
+	await teamGroupDoc.collection('tasks').add(task)
 	return true
 }
 

@@ -11,7 +11,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.testGetInfo = exports.createTask = void 0;
 const setup_1 = require("./setup");
-const createTask = (idGroug, task) => __awaiter(void 0, void 0, void 0, function* () {
+const createTask = (idTelegramGroup, task) => __awaiter(void 0, void 0, void 0, function* () {
+    const teamGroupDoc = setup_1.database.collection('team_groups').doc(`${String(idTelegramGroup)}`);
+    const teamGroupSnapshot = yield teamGroupDoc.get();
+    // team group is no registered
+    if (!teamGroupSnapshot.exists)
+        return false;
+    yield teamGroupDoc.collection('tasks').add(task);
     return true;
 });
 exports.createTask = createTask;
