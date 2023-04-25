@@ -12,31 +12,6 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const messages_1 = require("./constants/messages");
 const bot = new telegraf_1.Telegraf(process.env.TOKEN || '');
-class Grupo {
-    constructor(nombre) {
-        this.nombre = nombre;
-        this.integrantes = [];
-        this.tareas = [];
-    }
-    agregarIntegrante(integrante) {
-        this.integrantes.push(integrante);
-    }
-    obtenerIntegrantes() {
-        return this.integrantes;
-    }
-    dividirEnSalas(numSalas) {
-        const salas = [];
-        const integrantesPorSala = Math.ceil(this.integrantes.length / numSalas);
-        for (let i = 0; i < numSalas; i++) {
-            const inicio = i * integrantesPorSala;
-            const fin = inicio + integrantesPorSala;
-            const sala = this.integrantes.slice(inicio, fin);
-            salas.push(`Sala ${i + 1}: ${sala.join(", ")}`);
-        }
-        return salas;
-    }
-}
-const grupos = {};
 bot.start((ctx) => __awaiter(void 0, void 0, void 0, function* () {
     let numMembers = yield ctx.getChatMembersCount();
     if (numMembers > 2)
@@ -68,10 +43,10 @@ bot.command('crear_grupo', (ctx) => __awaiter(void 0, void 0, void 0, function* 
     if (!nombreGrupo) {
         return ctx.reply('Debes especificar un nombre para el grupo.');
     }
-    if (grupos[nombreGrupo]) {
+    if (false) {
         return ctx.reply(`Ya existe un grupo con el nombre ${nombreGrupo}.`);
     }
-    grupos[nombreGrupo] = new Grupo(nombreGrupo);
+    // Create new group
     return ctx.reply(`El grupo ${nombreGrupo} ha sido creado correctamente.`);
 }));
 exports.default = bot;
