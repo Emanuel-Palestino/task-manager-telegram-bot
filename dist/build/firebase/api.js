@@ -11,17 +11,26 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.testGetInfo = exports.createArea = exports.createTask = exports.registerTelegramGroup = void 0;
 const setup_1 = require("./setup");
+const isTeamGroupRegistered = (teamGroupDoc) => __awaiter(void 0, void 0, void 0, function* () {
+    const teamGroupSnapshot = yield teamGroupDoc.get();
+    // team group is no registered
+    if (!teamGroupSnapshot.exists)
+        return false;
+    return true;
+});
 const registerTelegramGroup = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
-    const teamGroupDoc = setup_1.database.collection('team_groups').doc(`${idTelegramGroup}`);
+    const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
+    // team group alredy registered
+    if (yield isTeamGroupRegistered(teamGroupDoc))
+        return false;
     yield teamGroupDoc.set({ grupo: 'algo' });
     return true;
 });
 exports.registerTelegramGroup = registerTelegramGroup;
 const createTask = (idTelegramGroup, task) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
-    const teamGroupSnapshot = yield teamGroupDoc.get();
     // team group is no registered
-    if (!teamGroupSnapshot.exists)
+    if (!(yield isTeamGroupRegistered(teamGroupDoc)))
         return false;
     yield teamGroupDoc.collection('tasks').add(task);
     return true;
@@ -29,9 +38,8 @@ const createTask = (idTelegramGroup, task) => __awaiter(void 0, void 0, void 0, 
 exports.createTask = createTask;
 const createArea = (idTelegramGroup, area) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
-    const teamGroupSnapshot = yield teamGroupDoc.get();
     // team group is no registered
-    if (!teamGroupSnapshot.exists)
+    if (!(yield isTeamGroupRegistered(teamGroupDoc)))
         return false;
     yield teamGroupDoc.collection('areas').add(area);
     return true;
