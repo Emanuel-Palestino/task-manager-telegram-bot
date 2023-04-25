@@ -4,6 +4,9 @@ dotenv.config()
 
 import bot from './bot'
 
+// Load bot features
+import './features/testing'
+
 // Launch bot
 bot.launch()
 console.log('Bot running')

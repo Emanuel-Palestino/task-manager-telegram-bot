@@ -7,6 +7,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const bot_1 = __importDefault(require("./bot"));
+// Load bot features
+require("./features/testing");
 // Launch bot
 bot_1.default.launch();
 console.log('Bot running');

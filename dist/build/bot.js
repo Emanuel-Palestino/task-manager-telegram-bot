@@ -56,7 +56,7 @@ bot.command('myteam', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
 bot.action('join', ctx => {
     return ctx.answerCbQuery('Welcome to the team!');
 });
-bot.command('/members', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+bot.command('members', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     let numMembers = yield ctx.getChatMembersCount();
     if (numMembers == 2)
         return ctx.deleteMessage(ctx.message.message_id);
