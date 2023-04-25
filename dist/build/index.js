@@ -7,10 +7,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const dotenv_1 = __importDefault(require("dotenv"));
 dotenv_1.default.config();
 const bot_1 = __importDefault(require("./bot"));
-// Launch bot
-bot_1.default.launch();
 // Load bot features
 require("./features/testing");
+// Launch bot
+bot_1.default.launch();
 console.log('Bot running');
 // Enable graceful stop
 process.once('SIGINT', () => bot_1.default.stop('SIGINT'));
