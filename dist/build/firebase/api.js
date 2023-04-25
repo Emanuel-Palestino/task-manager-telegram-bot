@@ -45,8 +45,8 @@ const createArea = (idTelegramGroup, area) => __awaiter(void 0, void 0, void 0, 
     return true;
 });
 exports.createArea = createArea;
-const testGetInfo = () => __awaiter(void 0, void 0, void 0, function* () {
-    const teamsSnapshot = yield setup_1.database.collection('team_groups').get();
+const testGetInfo = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
+    const teamsSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/areas`).get();
     const team_groups = teamsSnapshot.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));
     console.log(team_groups);
     return true;

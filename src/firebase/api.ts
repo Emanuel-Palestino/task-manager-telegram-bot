@@ -44,8 +44,8 @@ export const createArea = async (idTelegramGroup: string, area: object): Promise
 	return true
 }
 
-export const testGetInfo = async (): Promise<boolean> => {
-	const teamsSnapshot = await database.collection('team_groups').get()
+export const testGetInfo = async (idTelegramGroup: string): Promise<boolean> => {
+	const teamsSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
 	const team_groups = teamsSnapshot.docs.map(doc => ({
 		id: doc.id,
 		...doc.data()
