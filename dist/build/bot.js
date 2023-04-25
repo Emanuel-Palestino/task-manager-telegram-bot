@@ -11,7 +11,6 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const messages_1 = require("./constants/messages");
-const api_1 = require("./firebase/api");
 const bot = new telegraf_1.Telegraf(process.env.TOKEN || '');
 bot.start((ctx) => __awaiter(void 0, void 0, void 0, function* () {
     let numMembers = yield ctx.getChatMembersCount();
@@ -37,12 +36,5 @@ bot.command('members', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     if (numMembers == 2)
         return ctx.deleteMessage(ctx.message.message_id);
     return ctx.reply('Members:\n');
-}));
-bot.command('test', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield (0, api_1.createArea)(String(ctx.chat.id), { name: 'Desarrollo' });
-    if (!response)
-        return console.log('No existe el grupo');
-    yield (0, api_1.testGetInfo)(String(ctx.chat.id));
-    return console.log('agregado');
 }));
 exports.default = bot;

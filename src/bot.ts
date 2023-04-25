@@ -1,7 +1,5 @@
 import { Markup, Telegraf } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
-import { createArea, createTask, testGetInfo } from './firebase/api'
-
 
 const bot = new Telegraf(process.env.TOKEN || '')
 
@@ -37,14 +35,6 @@ bot.command('members', async ctx => {
 		return ctx.deleteMessage(ctx.message.message_id)
 
 	return ctx.reply('Members:\n')
-})
-
-bot.command('test', async ctx => {
-	const response = await createArea(String(ctx.chat.id), { name: 'Desarrollo' })
-	if (!response)
-		return console.log('No existe el grupo')
-	await testGetInfo(String(ctx.chat.id))
-	return console.log('agregado')
 })
 
 
