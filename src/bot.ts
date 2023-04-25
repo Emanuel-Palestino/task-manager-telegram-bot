@@ -1,6 +1,6 @@
 import { Markup, Telegraf } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
-import { createTask, testGetInfo } from './firebase/api'
+import { createTask } from './firebase/api'
 
 
 const bot = new Telegraf(process.env.TOKEN || '')
@@ -40,7 +40,7 @@ bot.command('members', async ctx => {
 })
 
 bot.command('test', async ctx => {
-	const response = await createTask(ctx.chat.id, {title: 'Creada desde servidor', description: 'Tarea creada desde el servidor de pruebas'})
+	const response = await createTask(String(ctx.chat.id), { title: 'Creada desde servidor', description: 'Tarea creada desde el servidor de pruebas' })
 	if (!response)
 		return console.log('No existe el grupo')
 	return console.log('agregado')
