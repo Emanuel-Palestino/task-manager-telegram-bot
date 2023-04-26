@@ -44,6 +44,24 @@ export const createArea = async (idTelegramGroup: string, area: object): Promise
 	return true
 }
 
+export const getAreas = async (idTelegramGroup: string): Promise<any[]> => {
+	const groupAreasSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
+	const groupAreas = groupAreasSnapshot.docs.map(doc => ({
+		id: doc.id,
+		...doc.data()
+	}))
+	return groupAreas
+}
+
+export const getTasks = async (idTelegramGroup: string): Promise<any[]> => {
+	const groupTasksSnapshot = await database.collection(`team_groups/${idTelegramGroup}/tasks`).get()
+	const groupTasks = groupTasksSnapshot.docs.map(doc => ({
+		id: doc.id,
+		...doc.data()
+	}))
+	return groupTasks
+}
+
 export const testGetInfo = async (idTelegramGroup: string): Promise<boolean> => {
 	const teamsSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
 	const team_groups = teamsSnapshot.docs.map(doc => ({
