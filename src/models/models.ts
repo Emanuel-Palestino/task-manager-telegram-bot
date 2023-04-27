@@ -1,35 +1,89 @@
-export interface TeamGroup {
-    createdAt: string;
-    areas: {
-      [key: string]: {
-        name: string;
-      };
-    };
-    areasMembers: {
-      [key: string]: {
-        name: string;
-        username: string;
-      };
-    };
-    task: {
-      [key: string]: {
-        title: string;
-        description: string;
-        participants: {
-          [key: string]: {
-            name: string;
-            username: string;
-          };
-        };
-      };
-    };
-    persons: {
-      [key: string]: {
-        name: string;
-        username: string;
-      };
-    };
+export interface People {
+  [key: string]: {
+    id?: string
+    name: string
+    username: string
+  };
+}
+
+
+export interface Area {
+    id?: string
+    name: string
+}
+
+export interface AreasMembers {
+  [key: string]: {
+    id?: string
+    name: string
+    username: string
   }
+}
+
+
+export interface Task {
+  id?: string
+  title: string
+  description: string
+  participants: {
+    [key: string]: {
+      id?: string
+      name: string
+      username: string
+    }
+  }
+}
+export interface TeamGroup {
+  id?: string
+  createdAt: string
+  areas?: {
+    [key: string]: {
+      name: string
+    }
+  }
+  areasMembers?: AreasMembers
+  tasks?: {
+    [key: string]: Task
+  }
+  people?: People
+}
+/* export interface TeamGroup {
+  id?: string
+  createdAt: string
+  areas?: {
+    [key: string]: {
+      name: string
+    }
+  }
+  areasMembers?: {
+    [key: string]: {
+      id?: string
+      name: string
+      username: string
+    }
+  }
+  tasks?: {
+    [key: string]: {
+      id?:string
+      title: string
+      description: string
+      participants: {
+        [key: string]: {
+          id?: string
+          name: string
+          username: string
+        }
+      }
+    }
+  }
+  people?: {
+    [key: string]: {
+      id?:string
+      name: string
+      username: string
+    }
+  }
+} */
   
 const teamGroup: TeamGroup = {
     createdAt: '2023/04/24',
@@ -48,7 +102,7 @@ const teamGroup: TeamGroup = {
         username: 'hassam',
       },
     },
-    task: {
+    tasks: {
       'weawea': {
         title: 'prueba',
         description: 'prueba con bot',
@@ -60,7 +114,7 @@ const teamGroup: TeamGroup = {
         },
       },
     },
-    persons: {
+    people: {
       'werwer': {
         name: 'Ema',
         username: 'eznoel',
