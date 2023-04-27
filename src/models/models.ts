@@ -1,4 +1,4 @@
-interface TeamGroup {
+export interface TeamGroup {
     createdAt: string;
     areas: {
       [key: string]: {
@@ -31,7 +31,7 @@ interface TeamGroup {
     };
   }
   
-  export const teamGroup: TeamGroup = {
+const teamGroup: TeamGroup = {
     createdAt: '2023/04/24',
     areas: {
       '1234123': {
