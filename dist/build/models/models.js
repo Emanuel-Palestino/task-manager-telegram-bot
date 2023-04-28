@@ -1,57 +1,32 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-/* export interface TeamGroup {
-  id?: string
-  createdAt: string
-  areas?: {
-    [key: string]: {
-      name: string
-    }
-  }
-  areasMembers?: {
-    [key: string]: {
-      id?: string
-      name: string
-      username: string
-    }
-  }
-  tasks?: {
-    [key: string]: {
-      id?:string
-      title: string
-      description: string
-      participants: {
-        [key: string]: {
-          id?: string
-          name: string
-          username: string
-        }
-      }
-    }
-  }
-  people?: {
-    [key: string]: {
-      id?:string
-      name: string
-      username: string
-    }
-  }
-} */
+//Example
 const teamGroup = {
     createdAt: '2023/04/24',
     areas: {
         '1234123': {
             name: '',
         },
+        '1421': {
+            name: '',
+        }
     },
     areasMembers: {
-        'werwer': {
-            name: 'Ema',
-            username: 'eznoel',
+        'desarrollo': {
+            'ouiou': {
+                name: 'Hassam',
+                username: 'hassam',
+            },
         },
-        'ouiou': {
-            name: 'Hassam',
-            username: 'hassam',
+        'desarrollo2': {
+            'aaaa': {
+                name: 'Hassam',
+                username: 'hassam',
+            },
+            'hola': {
+                name: 'Etzael',
+                username: 'Goier'
+            }
         },
     },
     tasks: {

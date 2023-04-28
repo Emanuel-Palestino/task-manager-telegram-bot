@@ -1,4 +1,4 @@
-import { Markup, Telegraf,Scenes } from 'telegraf'
+import { Markup, Scenes, Telegraf, session } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
 
 const bot = new Telegraf<Scenes.WizardContext>(process.env.TOKEN || '')
@@ -37,19 +37,7 @@ bot.command('members', async ctx => {
 	return ctx.reply('Members:\n')
 })
 
-bot.command('crear_grupo', async (ctx) => {
-	const chatId: number = ctx.chat.id;
-	const nombreGrupo: string = ctx.message.text.split(' ')[1];
-	if (!nombreGrupo) {
-		return ctx.reply('Debes especificar un nombre para el grupo.');
-	}
-	if (false) {
-		return ctx.reply(`Ya existe un grupo con el nombre ${nombreGrupo}.`);
-	}
-	// Create new group
-	return ctx.reply(`El grupo ${nombreGrupo} ha sido creado correctamente.`);
-});
 
-
+bot.use(session())
 
 export default bot

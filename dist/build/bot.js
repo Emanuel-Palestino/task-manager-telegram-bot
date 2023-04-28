@@ -37,16 +37,5 @@ bot.command('members', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
         return ctx.deleteMessage(ctx.message.message_id);
     return ctx.reply('Members:\n');
 }));
-bot.command('crear_grupo', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const chatId = ctx.chat.id;
-    const nombreGrupo = ctx.message.text.split(' ')[1];
-    if (!nombreGrupo) {
-        return ctx.reply('Debes especificar un nombre para el grupo.');
-    }
-    if (false) {
-        return ctx.reply(`Ya existe un grupo con el nombre ${nombreGrupo}.`);
-    }
-    // Create new group
-    return ctx.reply(`El grupo ${nombreGrupo} ha sido creado correctamente.`);
-}));
+bot.use((0, telegraf_1.session)());
 exports.default = bot;
