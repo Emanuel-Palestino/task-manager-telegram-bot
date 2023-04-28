@@ -1,7 +1,7 @@
-import { Markup, Telegraf } from 'telegraf'
+import { Markup, Telegraf,Scenes } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
 
-const bot = new Telegraf(process.env.TOKEN || '')
+const bot = new Telegraf<Scenes.WizardContext>(process.env.TOKEN || '')
 
 bot.start(async ctx => {
 	let numMembers = await ctx.getChatMembersCount()

@@ -6,6 +6,7 @@ import bot from './bot'
 
 // Load bot features
 import './features/testing'
+import './features/create_task'
 
 // Launch bot
 bot.launch()
