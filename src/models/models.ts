@@ -13,7 +13,7 @@ export interface Task {
 	id?: string
 	title: string
 	description: string
-	participants: {
+	participants?: {
 		[key: string]: Person
 	}
 }

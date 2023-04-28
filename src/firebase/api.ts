@@ -1,3 +1,4 @@
+import { Area, Task } from '../models/models'
 import { database } from './setup'
 
 
@@ -22,7 +23,7 @@ export const registerTelegramGroup = async (idTelegramGroup: string): Promise<bo
 	return true
 }
 
-export const createTask = async (idTelegramGroup: string, task: object): Promise<boolean> => {
+export const createTask = async (idTelegramGroup: string, task: Task): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
 	// team group is no registered
@@ -33,7 +34,7 @@ export const createTask = async (idTelegramGroup: string, task: object): Promise
 	return true
 }
 
-export const createArea = async (idTelegramGroup: string, area: object): Promise<boolean> => {
+export const createArea = async (idTelegramGroup: string, area: Area): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
 	// team group is no registered
@@ -44,19 +45,22 @@ export const createArea = async (idTelegramGroup: string, area: object): Promise
 	return true
 }
 
-export const getAreas = async (idTelegramGroup: string): Promise<any[]> => {
+export const getAreas = async (idTelegramGroup: string): Promise<Area[]> => {
 	const groupAreasSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
-	const groupAreas = groupAreasSnapshot.docs.map(doc => ({
+	const groupAreas: Area[] = groupAreasSnapshot.docs.map(doc => ({
 		id: doc.id,
+		name: doc.get('name'),
 		...doc.data()
 	}))
 	return groupAreas
 }
 
-export const getTasks = async (idTelegramGroup: string): Promise<any[]> => {
+export const getTasks = async (idTelegramGroup: string): Promise<Task[]> => {
 	const groupTasksSnapshot = await database.collection(`team_groups/${idTelegramGroup}/tasks`).get()
-	const groupTasks = groupTasksSnapshot.docs.map(doc => ({
+	const groupTasks: Task[] = groupTasksSnapshot.docs.map(doc => ({
 		id: doc.id,
+		description: doc.get('description'),
+		title: doc.get('title'),
 		...doc.data()
 	}))
 	return groupTasks
