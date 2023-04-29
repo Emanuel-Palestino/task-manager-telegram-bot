@@ -15,8 +15,6 @@ bot_1.default.command('date', (ctx) => {
 });
 bot_1.default.on((0, filters_1.callbackQuery)("data"), ctx => {
     let [actionType, actionValue, days] = ctx.callbackQuery.data.split(':');
-    console.log(actionType);
-    console.log(actionValue);
     switch (actionType) {
         case 'anio':
             ctx.answerCbQuery();
