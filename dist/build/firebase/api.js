@@ -47,13 +47,13 @@ const createArea = (idTelegramGroup, area) => __awaiter(void 0, void 0, void 0, 
 exports.createArea = createArea;
 const getAreas = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
     const groupAreasSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/areas`).get();
-    const groupAreas = groupAreasSnapshot.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));
+    const groupAreas = groupAreasSnapshot.docs.map(doc => (Object.assign({ id: doc.id, name: doc.get('name') }, doc.data())));
     return groupAreas;
 });
 exports.getAreas = getAreas;
 const getTasks = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
     const groupTasksSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/tasks`).get();
-    const groupTasks = groupTasksSnapshot.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));
+    const groupTasks = groupTasksSnapshot.docs.map(doc => (Object.assign({ id: doc.id, description: doc.get('description'), title: doc.get('title') }, doc.data())));
     return groupTasks;
 });
 exports.getTasks = getTasks;
