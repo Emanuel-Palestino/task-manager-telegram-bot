@@ -7,6 +7,7 @@ import bot from './bot'
 // Load bot features
 import './features/testing'
 import './features/createArea'
+import './features/calendar'
 
 // Launch bot
 bot.launch()
