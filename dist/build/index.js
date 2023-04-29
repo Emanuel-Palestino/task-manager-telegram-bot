@@ -9,6 +9,7 @@ dotenv_1.default.config();
 const bot_1 = __importDefault(require("./bot"));
 // Load bot features
 require("./features/testing");
+require("./features/calendar");
 // Launch bot
 bot_1.default.launch();
 console.log('Bot running');
