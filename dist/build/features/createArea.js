@@ -25,7 +25,7 @@ const createAreaWizard = new telegraf_1.Scenes.WizardScene('create-area-wizard',
     return ctx.wizard.next();
 }), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const areaName = ctx.message.text;
+    const areaName = ctx.message.text.trim();
     if (!validAreaName(areaName)) {
         yield ctx.reply('Please give me a valid area name.');
         return ctx.wizard.selectStep(1);
@@ -40,7 +40,8 @@ const createAreaWizard = new telegraf_1.Scenes.WizardScene('create-area-wizard',
 const createAreaStage = new telegraf_1.Scenes.Stage([createAreaWizard]);
 bot_1.default.use(createAreaStage.middleware());
 bot_1.default.command('create_area', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const [, areaName] = ctx.message.text.split('/create_area');
+    let [, areaName] = ctx.message.text.split('/create_area');
+    areaName = areaName.trim();
     const idTelegramGroup = ctx.chat.id;
     // Create area if area name was given
     if (areaName) {

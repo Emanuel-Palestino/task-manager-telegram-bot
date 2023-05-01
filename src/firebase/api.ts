@@ -1,4 +1,4 @@
-import { Area, Task } from '../models/models'
+import { Area, Task, TeamGroup } from '../models/models'
 import { database } from './setup'
 
 
@@ -19,7 +19,12 @@ export const registerTelegramGroup = async (idTelegramGroup: string): Promise<bo
 	if (await isTeamGroupRegistered(teamGroupDoc))
 		return false
 
-	await teamGroupDoc.set({ grupo: 'algo' })
+	// Add group
+	const today = new Date()
+	const newGroup: TeamGroup = {
+		createdAt: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+	}
+	await teamGroupDoc.set(newGroup)
 	return true
 }
 
