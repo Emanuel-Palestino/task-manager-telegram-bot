@@ -23,7 +23,12 @@ const registerTelegramGroup = (idTelegramGroup) => __awaiter(void 0, void 0, voi
     // team group alredy registered
     if (yield isTeamGroupRegistered(teamGroupDoc))
         return false;
-    yield teamGroupDoc.set({ grupo: 'algo' });
+    // Add group
+    const today = new Date();
+    const newGroup = {
+        createdAt: `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+    };
+    yield teamGroupDoc.set(newGroup);
     return true;
 });
 exports.registerTelegramGroup = registerTelegramGroup;
