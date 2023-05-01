@@ -19,7 +19,7 @@ const createAreaWizard = new Scenes.WizardScene<Scenes.WizardContext>(
 		return ctx.wizard.next()
 	},
 	async ctx => {
-		const areaName = (ctx.message as Message.TextMessage).text
+		const areaName = (ctx.message as Message.TextMessage).text.trim()
 
 		if (!validAreaName(areaName)) {
 			await ctx.reply('Please give me a valid area name.')
@@ -41,7 +41,8 @@ const createAreaStage = new Scenes.Stage<Scenes.WizardContext>([createAreaWizard
 bot.use(createAreaStage.middleware())
 
 bot.command('create_area', async ctx => {
-	const [, areaName] = ctx.message.text.split('/create_area')
+	let [, areaName] = ctx.message.text.split('/create_area')
+	areaName = areaName.trim()
 	const idTelegramGroup = ctx.chat.id
 
 	// Create area if area name was given
