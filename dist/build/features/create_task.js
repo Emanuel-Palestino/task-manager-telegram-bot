@@ -13,31 +13,54 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
+const api_1 = require("../firebase/api");
 const bot_1 = __importDefault(require("../bot"));
+const newTask = {
+    id: '',
+    title: '',
+    description: '',
+    participants: { 'ouiou': { id: '', name: '', username: '' } }
+};
+function info_user(message) {
+    const entities = message.entities;
+    if (entities)
+        return entities[0].user;
+}
 const task_wizard = new telegraf_1.Scenes.WizardScene('create_task', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     yield ctx.reply("Please, enter the name of the new task");
     return ctx.wizard.next();
 }), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const task_name = ctx.message.text;
+    newTask.title = ctx.message.text;
+    console.log(newTask.title);
     yield ctx.reply("Please, enter the desription of the task");
     return ctx.wizard.next();
-}), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const task_description = ctx.message.text;
-    yield ctx.reply("please assign the task manager");
+}), 
+/*async (ctx) => {
+
+    [,newTask.description] = (ctx.message as Message.TextMessage).text.split('/')
+    await ctx.reply("Please assign the task manager");
     return ctx.wizard.next();
-}), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const task_manager = ctx.message.text;
-    yield ctx.reply("please set the delivery date");
+},
+
+async (ctx) => {
+    //Manager
+    await ctx.reply("Please set the delivery date");
     return ctx.wizard.next();
-}), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const task_date = ctx.message.text;
-    yield ctx.reply("Done");
+},*/
+(ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    //Date
+    [, newTask.description] = ctx.message.text.split('/');
+    const response = yield (0, api_1.createTask)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id), newTask);
+    if (response)
+        yield ctx.reply(`The "${newTask.title}" area was registered successfully!`);
+    else
+        yield ctx.reply('Error');
     return yield ctx.scene.leave();
 }));
 const stage = new telegraf_1.Scenes.Stage([task_wizard]);
 bot_1.default.use(stage.middleware());
 bot_1.default.command('create_task', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    yield ctx.reply("Entramos");
     return yield ctx.scene.enter('create_task');
 }));
 //bot.use(session());
