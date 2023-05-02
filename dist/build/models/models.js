@@ -13,19 +13,23 @@ const teamGroup = {
     },
     areasMembers: {
         'desarrollo': {
-            'ouiou': {
-                name: 'Hassam',
-                username: 'hassam',
-            },
+            members: {
+                'ouiou': {
+                    name: 'Hassam',
+                    username: 'hassam',
+                }
+            }
         },
         'desarrollo2': {
-            'aaaa': {
-                name: 'Hassam',
-                username: 'hassam',
-            },
-            'hola': {
-                name: 'Etzael',
-                username: 'Goier'
+            members: {
+                'aaaa': {
+                    name: 'Hassam',
+                    username: 'hassam',
+                },
+                'hola': {
+                    name: 'Etzael',
+                    username: 'Goier'
+                }
             }
         },
     },

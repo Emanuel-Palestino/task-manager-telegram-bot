@@ -52,7 +52,7 @@ bot.action('join_team', (ctx) => __awaiter(void 0, void 0, void 0, function* () 
         username: username || ''
     };
     // Add member to work team data base
-    const response = yield (0, api_1.addMember)(String(ctx.chat.id), newPerson);
+    const response = yield (0, api_1.addMemberToTeam)(String(ctx.chat.id), newPerson);
     // Addition failed
     if (!response)
         ctx.answerCbQuery('Addition failed or group is not registered.');

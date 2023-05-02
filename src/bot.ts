@@ -1,6 +1,6 @@
 import { Markup, Scenes, Telegraf, session } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
-import { addMember, registerTelegramGroup } from './firebase/api'
+import { addMemberToTeam, registerTelegramGroup } from './firebase/api'
 import { Person } from './models/models'
 
 
@@ -58,7 +58,7 @@ bot.action('join_team', async ctx => {
 	}
 
 	// Add member to work team data base
-	const response = await addMember(String(ctx.chat!.id), newPerson)
+	const response = await addMemberToTeam(String(ctx.chat!.id), newPerson)
 
 	// Addition failed
 	if (!response)

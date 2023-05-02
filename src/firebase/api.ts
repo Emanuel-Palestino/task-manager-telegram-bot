@@ -29,7 +29,7 @@ export const registerTelegramGroup = async (idTelegramGroup: string): Promise<bo
 }
 
 
-/* CREATE METHODS */
+/* CREATE/ADD METHODS */
 export const createTask = async (idTelegramGroup: string, task: Task): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
@@ -52,7 +52,7 @@ export const createArea = async (idTelegramGroup: string, area: Area): Promise<b
 	return true
 }
 
-export const addMember = async (idTelegramGroup: string, member: Person): Promise<boolean> => {
+export const addMemberToTeam = async (idTelegramGroup: string, member: Person): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
 	// team group is not registered
@@ -60,6 +60,21 @@ export const addMember = async (idTelegramGroup: string, member: Person): Promis
 		return false
 
 	await teamGroupDoc.collection('members').doc(member.id || '').set(member)
+	return true
+}
+
+export const addMemberToArea = async (idTelegramGroup: string, member: Person, areaId: string): Promise<boolean> => {
+	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
+
+	// team group is not registered
+	if (! await isTeamGroupRegistered(teamGroupDoc))
+		return false
+	
+	// Create area doc in areasMembers collection
+	await teamGroupDoc.collection('areasMembers').doc(areaId).set({})
+
+	// Add member to area
+	await teamGroupDoc.collection(`areasMembers/${areaId}/members`).doc(member.id || '').set(member)
 	return true
 }
 
