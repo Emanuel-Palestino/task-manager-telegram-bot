@@ -1,11 +1,11 @@
-import { Area, Task, TeamGroup } from '../models/models'
+import { Area, Person, Task, TeamGroup } from '../models/models'
 import { database } from './setup'
 
 
 const isTeamGroupRegistered = async (teamGroupDoc: FirebaseFirestore.DocumentReference<FirebaseFirestore.DocumentData>): Promise<boolean> => {
 	const teamGroupSnapshot = await teamGroupDoc.get()
 
-	// team group is no registered
+	// team group is not registered
 	if (!teamGroupSnapshot.exists)
 		return false
 
@@ -28,10 +28,12 @@ export const registerTelegramGroup = async (idTelegramGroup: string): Promise<bo
 	return true
 }
 
+
+/* CREATE METHODS */
 export const createTask = async (idTelegramGroup: string, task: Task): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
-	// team group is no registered
+	// team group is not registered
 	if (! await isTeamGroupRegistered(teamGroupDoc))
 		return false
 
@@ -42,7 +44,7 @@ export const createTask = async (idTelegramGroup: string, task: Task): Promise<b
 export const createArea = async (idTelegramGroup: string, area: Area): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
-	// team group is no registered
+	// team group is not registered
 	if (! await isTeamGroupRegistered(teamGroupDoc))
 		return false
 
@@ -50,6 +52,19 @@ export const createArea = async (idTelegramGroup: string, area: Area): Promise<b
 	return true
 }
 
+export const addMember = async (idTelegramGroup: string, member: Person): Promise<boolean> => {
+	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
+
+	// team group is not registered
+	if (! await isTeamGroupRegistered(teamGroupDoc))
+		return false
+
+	await teamGroupDoc.collection('members').doc(member.id || '').set(member)
+	return true
+}
+
+
+/* GET METHODS */
 export const getAreas = async (idTelegramGroup: string): Promise<Area[]> => {
 	const groupAreasSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
 	const groupAreas: Area[] = groupAreasSnapshot.docs.map(doc => ({

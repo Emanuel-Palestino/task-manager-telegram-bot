@@ -41,7 +41,7 @@ const teamGroup = {
             },
         },
     },
-    people: {
+    members: {
         'werwer': {
             name: 'Ema',
             username: 'eznoel',

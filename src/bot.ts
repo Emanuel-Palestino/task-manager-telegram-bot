@@ -1,6 +1,7 @@
 import { Markup, Scenes, Telegraf, session } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
-import { registerTelegramGroup } from './firebase/api'
+import { addMember, registerTelegramGroup } from './firebase/api'
+import { Person } from './models/models'
 
 
 // Create bot
@@ -35,7 +36,7 @@ bot.command('register_workteam', async ctx => {
 	await ctx.reply(teamAddedMessage[0])
 	const message = await ctx.replyWithHTML(teamAddedMessage[1],
 		Markup.inlineKeyboard([
-			Markup.button.callback('Join the team', 'join')
+			Markup.button.callback('Join the team', 'join_team')
 		])
 	)
 
@@ -43,7 +44,26 @@ bot.command('register_workteam', async ctx => {
 	return await ctx.pinChatMessage(message.message_id)
 })
 
-bot.action('join', ctx => {
+bot.action('join_team', async ctx => {
+	// No user from 
+	if (!ctx.from)
+		return
+
+	// New member data
+	const { id, first_name, username } = ctx.from
+	const newPerson: Person = {
+		id: String(id),
+		name: first_name,
+		username: username || ''
+	}
+
+	// Add member to work team data base
+	const response = await addMember(String(ctx.chat!.id), newPerson)
+
+	// Addition failed
+	if (!response)
+		ctx.answerCbQuery('Addition failed or group is not registered.')
+
 	return ctx.answerCbQuery('Welcome to the team!')
 })
 

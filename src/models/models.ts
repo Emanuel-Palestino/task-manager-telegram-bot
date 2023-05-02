@@ -34,7 +34,7 @@ export interface TeamGroup {
 	tasks?: {
 		[key: string]: Task
 	}
-	people?: {
+	members?: {
 		[key: string]: Person
 	}
 }
@@ -82,7 +82,7 @@ const teamGroup: TeamGroup = {
 			},
 		},
 	},
-	people: {
+	members: {
 		'werwer': {
 			name: 'Ema',
 			username: 'eznoel',

@@ -9,11 +9,11 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testGetInfo = exports.getTasks = exports.getAreas = exports.createArea = exports.createTask = exports.registerTelegramGroup = void 0;
+exports.testGetInfo = exports.getTasks = exports.getAreas = exports.addMember = exports.createArea = exports.createTask = exports.registerTelegramGroup = void 0;
 const setup_1 = require("./setup");
 const isTeamGroupRegistered = (teamGroupDoc) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupSnapshot = yield teamGroupDoc.get();
-    // team group is no registered
+    // team group is not registered
     if (!teamGroupSnapshot.exists)
         return false;
     return true;
@@ -32,9 +32,10 @@ const registerTelegramGroup = (idTelegramGroup) => __awaiter(void 0, void 0, voi
     return true;
 });
 exports.registerTelegramGroup = registerTelegramGroup;
+/* CREATE METHODS */
 const createTask = (idTelegramGroup, task) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
-    // team group is no registered
+    // team group is not registered
     if (!(yield isTeamGroupRegistered(teamGroupDoc)))
         return false;
     yield teamGroupDoc.collection('tasks').add(task);
@@ -43,13 +44,23 @@ const createTask = (idTelegramGroup, task) => __awaiter(void 0, void 0, void 0, 
 exports.createTask = createTask;
 const createArea = (idTelegramGroup, area) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
-    // team group is no registered
+    // team group is not registered
     if (!(yield isTeamGroupRegistered(teamGroupDoc)))
         return false;
     yield teamGroupDoc.collection('areas').add(area);
     return true;
 });
 exports.createArea = createArea;
+const addMember = (idTelegramGroup, member) => __awaiter(void 0, void 0, void 0, function* () {
+    const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
+    // team group is not registered
+    if (!(yield isTeamGroupRegistered(teamGroupDoc)))
+        return false;
+    yield teamGroupDoc.collection('members').doc(member.id || '').set(member);
+    return true;
+});
+exports.addMember = addMember;
+/* GET METHODS */
 const getAreas = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
     const groupAreasSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/areas`).get();
     const groupAreas = groupAreasSnapshot.docs.map(doc => (Object.assign({ id: doc.id, name: doc.get('name') }, doc.data())));
