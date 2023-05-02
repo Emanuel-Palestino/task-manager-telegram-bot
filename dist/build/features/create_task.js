@@ -18,44 +18,54 @@ const bot_1 = __importDefault(require("../bot"));
 const newTask = {
     id: '',
     title: '',
-    description: '',
-    participants: { 'ouiou': { id: '', name: '', username: '' } }
+    description: ''
+    //participants:{'ouiou':{id:'',name:'',username:''}}
 };
 function info_user(message) {
     const entities = message.entities;
     if (entities)
         return entities[0].user;
 }
+const valid_task_name = (areaTask) => {
+    if (areaTask.length > 30)
+        return false;
+    return true;
+};
 const task_wizard = new telegraf_1.Scenes.WizardScene('create_task', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     yield ctx.reply("Please, enter the name of the new task");
     return ctx.wizard.next();
 }), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    newTask.title = ctx.message.text;
-    console.log(newTask.title);
+    if (!valid_task_name(ctx.message.text)) {
+        yield ctx.reply('Please give me a valid task name.');
+        return ctx.wizard.selectStep(1);
+    }
+    const task_name = ctx.message.text;
+    newTask.title = task_name;
     yield ctx.reply("Please, enter the desription of the task");
     return ctx.wizard.next();
 }), 
 /*async (ctx) => {
-
-    [,newTask.description] = (ctx.message as Message.TextMessage).text.split('/')
+    const task_description = (ctx.message as Message.TextMessage).text
+    newTask.description = String(task_description)
     await ctx.reply("Please assign the task manager");
     return ctx.wizard.next();
 },
 
 async (ctx) => {
-    //Manager
+    console.log(info_user(ctx.message))
     await ctx.reply("Please set the delivery date");
     return ctx.wizard.next();
 },*/
 (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    //Date
-    [, newTask.description] = ctx.message.text.split('/');
+    const task_description = ctx.message.text;
+    newTask.description = String(task_description);
     const response = yield (0, api_1.createTask)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id), newTask);
     if (response)
-        yield ctx.reply(`The "${newTask.title}" area was registered successfully!`);
+        return yield ctx.reply(`The "${newTask.title}" task was registered successfully!`);
     else
-        yield ctx.reply('Error');
+        return yield ctx.reply('Error');
+    yield ctx.reply("Done");
     return yield ctx.scene.leave();
 }));
 const stage = new telegraf_1.Scenes.Stage([task_wizard]);

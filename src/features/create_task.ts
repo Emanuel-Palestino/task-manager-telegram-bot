@@ -7,14 +7,21 @@ import bot from '../bot'
 const newTask:Task = {
 	id:'',
 	title: '',
-	description: '',
-	participants:{'ouiou':{id:'',name:'',username:''}}
+	description: ''
+	//participants:{'ouiou':{id:'',name:'',username:''}}
 }
 
 function info_user(message:any){
 	const entities = (message as Message.TextMessage).entities
 		if (entities)
 			return (entities[0] as any).user
+}
+
+const valid_task_name = (areaTask: string): Boolean => {
+	if (areaTask.length > 30)
+		return false
+
+	return true
 }
 
 const task_wizard = new Scenes.WizardScene<Scenes.WizardContext>(
@@ -24,36 +31,38 @@ const task_wizard = new Scenes.WizardScene<Scenes.WizardContext>(
 		return ctx.wizard.next()
 	},
 	async (ctx) => {
-		
-		newTask.title = (ctx.message as Message.TextMessage).text
-		console.log(newTask.title)
+		if(!valid_task_name((ctx.message as Message.TextMessage).text)){
+			await ctx.reply('Please give me a valid task name.')
+			return ctx.wizard.selectStep(1)
+		}
+		const task_name = (ctx.message as Message.TextMessage).text
+		newTask.title = task_name
 		await ctx.reply("Please, enter the desription of the task");
 		return ctx.wizard.next();
 	},
 
 	/*async (ctx) => {
-    
-		[,newTask.description] = (ctx.message as Message.TextMessage).text.split('/')
+        const task_description = (ctx.message as Message.TextMessage).text
+		newTask.description = String(task_description)
 		await ctx.reply("Please assign the task manager");
 		return ctx.wizard.next();
 	},
 
     async (ctx) => {
-		//Manager
+        console.log(info_user(ctx.message))
 		await ctx.reply("Please set the delivery date");
 		return ctx.wizard.next();
 	},*/
 
 	async (ctx) => {
-        //Date
-		[,newTask.description] = (ctx.message as Message.TextMessage).text.split('/')
-		const response = await createTask(String(ctx.chat?.id),newTask)
-
-		if(response)
-			await ctx.reply(`The "${newTask.title}" area was registered successfully!`)
+		const task_description = (ctx.message as Message.TextMessage).text
+		newTask.description = String(task_description)
+		const response = await  createTask(String(ctx.chat?.id),newTask)
+		if (response)
+			return await ctx.reply(`The "${newTask.title}" task was registered successfully!`)
 		else
-			await ctx.reply('Error')
-		
+			return await ctx.reply('Error')
+		await ctx.reply("Done");
 		return await ctx.scene.leave();
 	},
 );
