@@ -10,6 +10,7 @@ const bot_1 = __importDefault(require("./bot"));
 // Load bot features
 require("./features/testing");
 require("./features/createArea");
+require("./features/listAreas");
 // Launch bot
 bot_1.default.launch();
 console.log('Bot running');
