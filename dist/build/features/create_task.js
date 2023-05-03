@@ -19,7 +19,6 @@ const newTask = {
     id: '',
     title: '',
     description: ''
-    //participants:{'ouiou':{id:'',name:'',username:''}}
 };
 function info_user(message) {
     const entities = message.entities;
@@ -43,29 +42,15 @@ const task_wizard = new telegraf_1.Scenes.WizardScene('create_task', (ctx) => __
     newTask.title = task_name;
     yield ctx.reply("Please, enter the desription of the task");
     return ctx.wizard.next();
-}), 
-/*async (ctx) => {
-    const task_description = (ctx.message as Message.TextMessage).text
-    newTask.description = String(task_description)
-    await ctx.reply("Please assign the task manager");
-    return ctx.wizard.next();
-},
-
-async (ctx) => {
-    console.log(info_user(ctx.message))
-    await ctx.reply("Please set the delivery date");
-    return ctx.wizard.next();
-},*/
-(ctx) => __awaiter(void 0, void 0, void 0, function* () {
+}), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     const task_description = ctx.message.text;
     newTask.description = String(task_description);
     const response = yield (0, api_1.createTask)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id), newTask);
     if (response)
-        return yield ctx.reply(`The "${newTask.title}" task was registered successfully!`);
+        yield ctx.reply(`The "${newTask.title}" task was registered successfully!`);
     else
-        return yield ctx.reply('Error');
-    yield ctx.reply("Done");
+        yield ctx.reply('Error');
     return yield ctx.scene.leave();
 }));
 const stage = new telegraf_1.Scenes.Stage([task_wizard]);
@@ -73,6 +58,3 @@ bot_1.default.use(stage.middleware());
 bot_1.default.command('create_task', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     return yield ctx.scene.enter('create_task');
 }));
-//bot.use(session());
-//bot.hears("create_task", ctx => { return ctx.scene.enter("create_task");});
-//bot.command('create_task', async (ctx) => {await ctx.scene.enter('create_task')})
