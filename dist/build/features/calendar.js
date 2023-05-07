@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const bot_1 = __importDefault(require("../bot"));
 const filters_1 = require("telegraf/filters");
-// Comando para mostrar el selector de fecha
+const moment_1 = __importDefault(require("moment"));
 bot_1.default.command('date', (ctx) => {
     ctx.reply('Pick a year:', {
         reply_markup: {
@@ -15,6 +15,7 @@ bot_1.default.command('date', (ctx) => {
 });
 bot_1.default.on((0, filters_1.callbackQuery)("data"), ctx => {
     let [actionType, actionValue, days] = ctx.callbackQuery.data.split(':');
+    let date;
     switch (actionType) {
         case 'anio':
             ctx.answerCbQuery();
@@ -33,19 +34,26 @@ bot_1.default.on((0, filters_1.callbackQuery)("data"), ctx => {
             });
             break;
         case 'day':
-            ctx.editMessageText(`Date: ${actionValue}`);
+            date = actionValue;
+            ctx.editMessageText(`Date: ${date}`);
             ctx.answerCbQuery();
             break;
     }
 });
+function getDate() {
+    bot_1.default.on((0, filters_1.callbackQuery)("data"), ctx => {
+        ctx.reply('Pick a year:', {
+            reply_markup: {
+                inline_keyboard: generateCalendarKeyboardAnio(),
+            },
+        });
+    });
+}
 function generateCalendarKeyboardAnio() {
     const keyboard = [];
     const anios = [
         { name: '2023', anio: 2023 },
         { name: '2024', anio: 2024 },
-        { name: '2025', anio: 2025 },
-        { name: '2026', anio: 2026 },
-        { name: '2027', anio: 2027 }
     ];
     for (let i = 0; i < anios.length; i += 2) {
         const row = [];
@@ -61,18 +69,20 @@ function generateCalendarKeyboardAnio() {
 }
 function generateCalendarKeyboardMonth(anio) {
     const keyboard = [];
+    let days;
     const months = [
-        { name: 'Enero', days: 31, num: 1 }, { name: 'Febrero', days: 28, num: 2 }, { name: 'Marzo', days: 31, num: 3 }, { name: 'Abril', days: 30, num: 4 }, { name: 'Mayo', days: 31, num: 5 }, { name: 'Junio', days: 30, num: 6 },
-        { name: 'Julio', days: 31, num: 7 }, { name: 'Agosto', days: 31, num: 8 }, { name: 'Septiembre', days: 30, num: 9 }, { name: 'Octubre', days: 31, num: 10 }, { name: 'Noviembre', days: 30, num: 11 }, { name: 'Diciembre', days: 31, num: 12 },
+        { name: 'January' }, { name: 'February' }, { name: 'March' }, { name: 'April' }, { name: 'May' }, { name: 'June' },
+        { name: 'July' }, { name: 'August' }, { name: 'September' }, { name: 'October' }, { name: 'November' }, { name: 'December' },
     ];
-    // Añade botones para cada mes
     for (let i = 0; i < months.length; i += 2) {
         const row = [];
         const month1 = months[i];
         const month2 = i + 1 < months.length ? months[i + 1] : null;
-        row.push({ text: month1.name, callback_data: "month:" + anio + "/" + month1.name + ":" + month1.days });
+        days = (0, moment_1.default)(month1.name, "MMMM").daysInMonth();
+        row.push({ text: month1.name, callback_data: "month:" + anio + "/" + month1.name + ":" + days });
         if (month2) {
-            row.push({ text: month2.name, callback_data: "month:" + anio + "/" + month2.name + ":" + month2.days });
+            days = (0, moment_1.default)(month2.name, "MMMM").daysInMonth();
+            row.push({ text: month2.name, callback_data: "month:" + anio + "/" + month2.name + ":" + days });
         }
         keyboard.push(row);
     }
