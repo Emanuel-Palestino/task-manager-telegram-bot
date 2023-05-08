@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testGetInfo = exports.getTasks = exports.getAreas = exports.addMemberToArea = exports.addMemberToTeam = exports.createArea = exports.createTask = exports.registerTelegramGroup = void 0;
+exports.testGetInfo = exports.getAreaMembers = exports.getTasks = exports.getAreas = exports.addMemberToArea = exports.addMemberToTeam = exports.createArea = exports.createTask = exports.registerTelegramGroup = void 0;
 const setup_1 = require("./setup");
 const isTeamGroupRegistered = (teamGroupDoc) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupSnapshot = yield teamGroupDoc.get();
@@ -85,6 +85,12 @@ const getTasks = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function
     return groupTasks;
 });
 exports.getTasks = getTasks;
+const getAreaMembers = (idTelegramGroup, areaId) => __awaiter(void 0, void 0, void 0, function* () {
+    const groupAreasMembersSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/areasMembers/${areaId}/members`).get();
+    const members = groupAreasMembersSnapshot.docs.map(doc => (Object.assign({ id: doc.id, name: doc.get('name'), username: doc.get('username') }, doc.data())));
+    return members;
+});
+exports.getAreaMembers = getAreaMembers;
 const testGetInfo = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
     const teamsSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/areas`).get();
     const team_groups = teamsSnapshot.docs.map(doc => (Object.assign({ id: doc.id }, doc.data())));

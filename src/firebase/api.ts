@@ -69,7 +69,7 @@ export const addMemberToArea = async (idTelegramGroup: string, member: Person, a
 	// team group is not registered
 	if (! await isTeamGroupRegistered(teamGroupDoc))
 		return false
-	
+
 	// Create area doc in areasMembers collection
 	await teamGroupDoc.collection('areasMembers').doc(areaId).set({})
 
@@ -99,6 +99,18 @@ export const getTasks = async (idTelegramGroup: string): Promise<Task[]> => {
 		...doc.data()
 	}))
 	return groupTasks
+}
+
+export const getAreaMembers = async (idTelegramGroup: string, areaId: string): Promise<Person[]> => {
+	const groupAreasMembersSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areasMembers/${areaId}/members`).get()
+	const members: Person[] = groupAreasMembersSnapshot.docs.map(doc => ({
+		id: doc.id,
+		name: doc.get('name'),
+		username: doc.get('username'),
+		...doc.data()
+	}))
+
+	return members
 }
 
 export const testGetInfo = async (idTelegramGroup: string): Promise<boolean> => {
