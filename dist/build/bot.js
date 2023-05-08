@@ -11,31 +11,52 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const messages_1 = require("./constants/messages");
+const api_1 = require("./firebase/api");
+// Create bot
 const bot = new telegraf_1.Telegraf(process.env.TOKEN || '');
+// Start command, only available in a private chat
 bot.start((ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    let numMembers = yield ctx.getChatMembersCount();
-    if (numMembers > 2)
+    // Delete message if not in a private chat
+    if (ctx.chat.type !== 'private')
         return ctx.deleteMessage(ctx.message.message_id);
     return ctx.replyWithHTML(messages_1.initialMessage);
 }));
-bot.command('myteam', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    let numMembers = yield ctx.getChatMembersCount();
-    if (numMembers == 2)
+// "Register team group" command, only available in a group
+bot.command('register_workteam', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    const { type, id } = ctx.chat;
+    // Delete message if in a private chat
+    if (type === 'private')
         return ctx.deleteMessage(ctx.message.message_id);
-    return ctx.replyWithHTML(messages_1.teamAddedMessage, telegraf_1.Markup.inlineKeyboard([
-        telegraf_1.Markup.button.callback('Join the team', 'join')
-    ])).then(message => {
-        bot.telegram.pinChatMessage(ctx.chat.id, message.message_id);
-    });
+    // Register team
+    const response = yield (0, api_1.registerTelegramGroup)(String(id));
+    // Registration failed
+    if (!response)
+        return yield ctx.reply('Registration failed or workteam already registered.');
+    // Send successfully message
+    yield ctx.reply(messages_1.teamAddedMessage[0]);
+    const message = yield ctx.replyWithHTML(messages_1.teamAddedMessage[1], telegraf_1.Markup.inlineKeyboard([
+        telegraf_1.Markup.button.callback('Join the team', 'join_team')
+    ]));
+    // Pin message
+    return yield ctx.pinChatMessage(message.message_id);
 }));
-bot.action('join', ctx => {
+bot.action('join_team', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    // No user from 
+    if (!ctx.from)
+        return;
+    // New member data
+    const { id, first_name, username } = ctx.from;
+    const newPerson = {
+        id: String(id),
+        name: first_name,
+        username: username || ''
+    };
+    // Add member to work team data base
+    const response = yield (0, api_1.addMemberToTeam)(String(ctx.chat.id), newPerson);
+    // Addition failed
+    if (!response)
+        ctx.answerCbQuery('Addition failed or group is not registered.');
     return ctx.answerCbQuery('Welcome to the team!');
-});
-bot.command('members', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    let numMembers = yield ctx.getChatMembersCount();
-    if (numMembers == 2)
-        return ctx.deleteMessage(ctx.message.message_id);
-    return ctx.reply('Members:\n');
 }));
 bot.use((0, telegraf_1.session)());
 exports.default = bot;
