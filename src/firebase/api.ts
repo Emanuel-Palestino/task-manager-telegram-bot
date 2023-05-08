@@ -12,6 +12,12 @@ const isTeamGroupRegistered = async (teamGroupDoc: FirebaseFirestore.DocumentRef
 	return true
 }
 
+export const isMemberRegistered = async (idTelegramGroup: string, memberId: string): Promise<boolean> => {
+	const membersGroupSnapshot = await database.doc(`team_groups/${idTelegramGroup}/members/${memberId}`).get()
+
+	return membersGroupSnapshot.exists
+}
+
 export const registerTelegramGroup = async (idTelegramGroup: string): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
