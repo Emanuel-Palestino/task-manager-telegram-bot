@@ -35,13 +35,28 @@ bot.command('register_workteam', (ctx) => __awaiter(void 0, void 0, void 0, func
     // Send successfully message
     yield ctx.reply(messages_1.teamAddedMessage[0]);
     const message = yield ctx.replyWithHTML(messages_1.teamAddedMessage[1], telegraf_1.Markup.inlineKeyboard([
-        telegraf_1.Markup.button.callback('Join the team', 'join')
+        telegraf_1.Markup.button.callback('Join the team', 'join_team')
     ]));
     // Pin message
     return yield ctx.pinChatMessage(message.message_id);
 }));
-bot.action('join', ctx => {
+bot.action('join_team', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    // No user from 
+    if (!ctx.from)
+        return;
+    // New member data
+    const { id, first_name, username } = ctx.from;
+    const newPerson = {
+        id: String(id),
+        name: first_name,
+        username: username || ''
+    };
+    // Add member to work team data base
+    const response = yield (0, api_1.addMemberToTeam)(String(ctx.chat.id), newPerson);
+    // Addition failed
+    if (!response)
+        ctx.answerCbQuery('Addition failed or group is not registered.');
     return ctx.answerCbQuery('Welcome to the team!');
-});
+}));
 bot.use((0, telegraf_1.session)());
 exports.default = bot;
