@@ -5,7 +5,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const bot_1 = __importDefault(require("../bot"));
 const filters_1 = require("telegraf/filters");
-const moment_1 = __importDefault(require("moment"));
+const date_fns_1 = require("date-fns");
 bot_1.default.command('date', (ctx) => {
     ctx.reply('Pick a year:', {
         reply_markup: {
@@ -71,17 +71,17 @@ function generateCalendarKeyboardMonth(anio) {
     const keyboard = [];
     let days;
     const months = [
-        { name: 'January' }, { name: 'February' }, { name: 'March' }, { name: 'April' }, { name: 'May' }, { name: 'June' },
-        { name: 'July' }, { name: 'August' }, { name: 'September' }, { name: 'October' }, { name: 'November' }, { name: 'December' },
+        { name: 'January', num: 0 }, { name: 'February', num: 1 }, { name: 'March', num: 2 }, { name: 'April', num: 3 }, { name: 'May', num: 4 }, { name: 'June', num: 5 },
+        { name: 'July', num: 6 }, { name: 'August', num: 7 }, { name: 'September', num: 8 }, { name: 'October', num: 9 }, { name: 'November', num: 10 }, { name: 'December', num: 11 },
     ];
     for (let i = 0; i < months.length; i += 2) {
         const row = [];
         const month1 = months[i];
         const month2 = i + 1 < months.length ? months[i + 1] : null;
-        days = (0, moment_1.default)(month1.name, "MMMM").daysInMonth();
+        days = (0, date_fns_1.getDaysInMonth)(new Date(Number(anio), month1.num));
         row.push({ text: month1.name, callback_data: "month:" + anio + "/" + month1.name + ":" + days });
         if (month2) {
-            days = (0, moment_1.default)(month2.name, "MMMM").daysInMonth();
+            days = (0, date_fns_1.getDaysInMonth)(new Date(Number(anio), month2.num));
             row.push({ text: month2.name, callback_data: "month:" + anio + "/" + month2.name + ":" + days });
         }
         keyboard.push(row);
