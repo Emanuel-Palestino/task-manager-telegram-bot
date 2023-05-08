@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testGetInfo = exports.getAreaMembers = exports.getTasks = exports.getAreas = exports.addMemberToArea = exports.addMemberToTeam = exports.createArea = exports.createTask = exports.registerTelegramGroup = void 0;
+exports.testGetInfo = exports.getAreaMembers = exports.getTasks = exports.getAreas = exports.addMemberToArea = exports.addMemberToTeam = exports.createArea = exports.createTask = exports.registerTelegramGroup = exports.isMemberRegistered = void 0;
 const setup_1 = require("./setup");
 const isTeamGroupRegistered = (teamGroupDoc) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupSnapshot = yield teamGroupDoc.get();
@@ -18,6 +18,11 @@ const isTeamGroupRegistered = (teamGroupDoc) => __awaiter(void 0, void 0, void 0
         return false;
     return true;
 });
+const isMemberRegistered = (idTelegramGroup, memberId) => __awaiter(void 0, void 0, void 0, function* () {
+    const membersGroupSnapshot = yield setup_1.database.doc(`team_groups/${idTelegramGroup}/members/${memberId}`).get();
+    return membersGroupSnapshot.exists;
+});
+exports.isMemberRegistered = isMemberRegistered;
 const registerTelegramGroup = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
     // team group alredy registered
