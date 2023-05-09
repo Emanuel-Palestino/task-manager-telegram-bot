@@ -70,18 +70,20 @@ export async function assign_members(ctx: any): Promise<any> {
         //Si la opción de la area está dentro del rango
         if((index-1)<list_areas.length){
             let show_members = ''
-            ctx.scene.session.idAuxiliar = String(list_areas[index-1].id)
-            const list_area_members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idAuxiliar)
+            ctx.scene.session.idArea = String(list_areas[index-1].id)
+            const list_area_members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idArea)
 
+            console.log('*'+list_area_members)
             //Si existen miembros del área
-            if(list_area_members.length>0){
-                for(let i = 0; i<= list_area_members.length; i++)
-                show_members += (list_area_members[i].name + " " + list_area_members[i].username + '\n')
-                show_members += 'Press\n1.-Add all members\n2.- Add one by one'
+            if(0 < list_area_members.length){
+                for(let i = 0; i< list_area_members.length; i++)
+                    show_members += String(i+1)+".- @" + list_area_members[i].username + '\n'
+                show_members += '\nPress\n1.- Add all members\n2.- Add one by one'
+                ctx.reply(show_members)
                 ctx.scene.session.bandMember = "Select_option_assign"
             }
             else
-                await ctx.reply("The area members is empty.\nWrite 'Individual' or 'Areas' for the selection of members.")
+                await ctx.reply("The area is empty\nWrite the number for the member assignment type:\n1.- Individual (one for one)\n2.- Group area")
         }
         else
             await ctx.reply("The area does not exist, please rewrite the number")
@@ -93,7 +95,8 @@ export async function assign_members(ctx: any): Promise<any> {
     else  if(ctx.scene.session.bandMember == "Select_option_assign"){
             //Retorna todos los miembros
             if((ctx.message as Message.TextMessage).text == '1'){
-                ctx.scene.session.members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idAuxiliar)
+                ctx.scene.session.members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idArea)
+                console.log(ctx.scene.session.members)
                 ctx.wizard.next();
                 return ctx.wizard.steps[ctx.wizard.cursor](ctx);
             }
@@ -111,7 +114,7 @@ export async function assign_members(ctx: any): Promise<any> {
             const username = (ctx.message as Message.TextMessage).text;
 
             if(ctx.scene.session.bandMember == "Area_individual")
-                list_members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idAuxiliar)
+                list_members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idArea)
             else
                 list_members = await getGroupMembers(ctx.chat?.id)
 

@@ -13,34 +13,24 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
+const AssignParticipants_1 = require("./AssignParticipants");
 const bot_1 = __importDefault(require("../bot"));
+const listAreas_1 = require("./listAreas");
 const api_1 = require("../firebase/api");
-const areaAss_wizard = new telegraf_1.Scenes.WizardScene("assign_area", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+const areaAss_wizard = new telegraf_1.Scenes.WizardScene("assign_area", listAreas_1.list_areas, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.scene.session.members = [];
+    ctx.scene.session.bandMember = 'Choice_options';
+    yield ctx.reply("Write the numer for the member assignment type:\n1.- Individual (one for one)\n2.- Group area");
+    return ctx.wizard.next();
+}), AssignParticipants_1.assign_members, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
-    const list_areas = yield (0, api_1.getAreas)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id));
-    let listAreas = '';
-    for (let i = 0; i < list_areas.length; i++)
-        listAreas += String(i + 1) + ".- " + list_areas[i].name + "\n";
-    yield ctx.reply(listAreas + "\n" + "Write the number of the team area");
-}), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    var _b, _c;
-    const list_areas = yield (0, api_1.getAreas)(String((_b = ctx.chat) === null || _b === void 0 ? void 0 : _b.id));
-    const index = Number(ctx.message.text);
-    //Si la opción de la area está dentro del rango
-    if ((index - 1) < list_areas.length) {
-        let show_members = '';
-        ctx.scene.session.idAuxiliar = String(list_areas[index - 1].id);
-        const list_area_members = yield (0, api_1.getAreaMembers)(String((_c = ctx.chat) === null || _c === void 0 ? void 0 : _c.id), ctx.scene.session.idAuxiliar);
-        //Si existen miembros del área
-        if (list_area_members.length > 0) {
-            for (let i = 0; i <= list_area_members.length; i++)
-                show_members += (list_area_members[i].name + " " + list_area_members[i].username + '\n');
-            show_members += 'Press\n1.-Add all members\n2.- Add one by one';
-            ctx.scene.session.bandMember = "Select_option_assign";
-        }
-        else
-            yield ctx.reply("The area members is empty.\nWrite 'Individual' or 'Areas' for the selection of members.");
+    for (let i = 0; i < ctx.scene.session.members.length; i++) {
+        const response = yield (0, api_1.addMemberToArea)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id), ctx.scene.session.members[i], ctx.scene.session.idArea);
+        if (!response)
+            yield ctx.reply('Error');
     }
+    yield ctx.reply('The members have been registered');
+    ctx.scene.leave();
 }));
 const stage = new telegraf_1.Scenes.Stage([areaAss_wizard]);
 bot_1.default.use(stage.middleware());

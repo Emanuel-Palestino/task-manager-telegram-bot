@@ -4,9 +4,7 @@ interface MyWizardSession extends Scenes.WizardSessionData {
 	new_task: Task
     members: Person [] 
     bandMember: string
-    idGroup:number
-    idArea:number
-    idAuxiliar:string
+    idArea:string
     date:String
     messageAfterDate:string
 }

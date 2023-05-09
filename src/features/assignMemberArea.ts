@@ -2,39 +2,32 @@ import { Markup, Scenes, Context } from "telegraf";
 import { callbackQuery } from "telegraf/filters";
 import { Message } from "telegraf/typings/core/types/typegram";
 import { customWizardContext } from "../models/customWizardContext";
+import { assign_members } from "./AssignParticipants";
 import bot from "../bot";
-import { getAreaMembers, getAreas } from "../firebase/api";
+import { list_areas } from "./listAreas";
+import { addMemberToArea } from "../firebase/api";
 
 const areaAss_wizard = new Scenes.WizardScene<customWizardContext>("assign_area",
-    async (ctx) =>{
-        const list_areas = await getAreas(String(ctx.chat?.id));
-        let listAreas: String = ''
-        for (let i = 0; i < list_areas.length; i++)
-            listAreas += String(i + 1) + ".- " + list_areas[i].name + "\n"
+    list_areas,
 
-        await ctx.reply(listAreas + "\n" + "Write the number of the team area")
+    async (ctx) =>{
+        ctx.scene.session.members = []
+        ctx.scene.session.bandMember = 'Choice_options'
+
+        await ctx.reply("Write the numer for the member assignment type:\n1.- Individual (one for one)\n2.- Group area");
+        return ctx.wizard.next();
+
     },
+    assign_members,
 
     async (ctx) =>{
-        const list_areas = await getAreas(String(ctx.chat?.id));
-        const index = Number((ctx.message as Message.TextMessage).text)
-        
-        //Si la opción de la area está dentro del rango
-        if((index-1)<list_areas.length){
-            let show_members = ''
-            ctx.scene.session.idAuxiliar = String(list_areas[index-1].id)
-            const list_area_members = await getAreaMembers(String(ctx.chat?.id),ctx.scene.session.idAuxiliar)
-
-            //Si existen miembros del área
-            if(list_area_members.length>0){
-                for(let i = 0; i<= list_area_members.length; i++)
-                show_members += (list_area_members[i].name + " " + list_area_members[i].username + '\n')
-                show_members += 'Press\n1.-Add all members\n2.- Add one by one'
-                ctx.scene.session.bandMember = "Select_option_assign"
-            }
-            else
-                await ctx.reply("The area members is empty.\nWrite 'Individual' or 'Areas' for the selection of members.")
+        for(let i = 0; i<ctx.scene.session.members.length;i++){
+            const response = await addMemberToArea(String(ctx.chat?.id),ctx.scene.session.members[i],ctx.scene.session.idArea)
+            if (!response) 
+                await ctx.reply('Error')
         }
+        await ctx.reply('The members have been registered')
+        ctx.scene.leave()
     }
 )  
 
