@@ -15,6 +15,8 @@
     "typescript": "^4.7.2"
   },
   "dependencies": {
+    "@types/date-fns": "^2.6.0",
+    "date-fns": "^2.30.0",
     "dotenv": "^16.0.1",
     "firebase-admin": "^11.6.0",
     "ng": "^0.0.0",

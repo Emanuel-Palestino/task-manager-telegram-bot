@@ -6,10 +6,12 @@ import bot from './bot'
 
 // Load bot features
 import './features/testing'
+import './features/create_task'
 import './features/createArea'
 import './features/listAreas'
 import './features/randomActivities'
 import './features/randomMember'
+import './features/calendar'
 
 // Launch bot
 bot.launch()
