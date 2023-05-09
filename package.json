@@ -19,7 +19,6 @@
     "date-fns": "^2.30.0",
     "dotenv": "^16.0.1",
     "firebase-admin": "^11.6.0",
-    "moment": "^2.29.4",
     "ng": "^0.0.0",
     "node-telegram-bot-api": "^0.61.0",
     "telegraf": "^4.12.2"
