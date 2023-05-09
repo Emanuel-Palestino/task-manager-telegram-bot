@@ -30,8 +30,8 @@ bot.command('register_workteam', async ctx => {
 	const response = await registerTelegramGroup(String(id))
 
 	// Registration failed
-	if (!response)
-		return await ctx.reply('Registration failed or workteam already registered.')
+	//if (!response)
+	//	return await ctx.reply('Registration failed or workteam already registered.')
 
 	// Send successfully message
 	await ctx.reply(teamAddedMessage[0])

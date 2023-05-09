@@ -9,6 +9,7 @@ import './features/testing'
 import './features/create_task'
 import './features/createArea'
 import './features/calendar'
+import './features/assignMemberArea'
 
 // Launch bot
 bot.launch()

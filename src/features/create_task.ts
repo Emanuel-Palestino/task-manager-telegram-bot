@@ -1,15 +1,10 @@
-import { Markup, Scenes, Context } from "telegraf";
+import { Scenes } from "telegraf";
 import { callbackQuery } from "telegraf/filters";
 import { Message } from "telegraf/typings/core/types/typegram";
 import { customWizardContext } from "../models/customWizardContext";
-import { createTask, getGroupMembers } from "../firebase/api";
-import { getAreaMembers } from "../firebase/api";
-import {
-  generateCalendarKeyboardAnio,
-  generateCalendarKeyboardMonth,
-  generateCalendarKeyboardDay,
-} from "./calendar";
-import { assign_members } from "./AssignParticipants";
+import { createTask, getAreas, getGroupMembers } from "../firebase/api";
+import { generateCalendarKeyboardAnio, bot_function, } from "./calendar";
+import { assign_members, list_areas_mebers } from "./AssignParticipants";
 import bot from "../bot";
 
 const valid_task_name = (areaTask: string): Boolean => {
@@ -28,7 +23,9 @@ const task_wizard = new Scenes.WizardScene<customWizardContext>(
       description: "",
       participants: {},
     };
-    ctx.scene.session.members = {};
+
+    ctx.scene.session.members = []
+    ctx.scene.session.bandMember = 'Choice_options'
 
     return ctx.wizard.next();
   },
@@ -40,12 +37,9 @@ const task_wizard = new Scenes.WizardScene<customWizardContext>(
       return ctx.wizard.selectStep(1);
     }
 
-    ctx.scene.session.new_task.title = (
-      ctx.message as Message.TextMessage
-    ).text;
-    await ctx.reply(
-      "Write if you want 'Individual' or 'Areas' for the selection of members."
-    );
+    ctx.scene.session.new_task.title = (ctx.message as Message.TextMessage).text;
+
+    await ctx.reply("Write the numer for the member assignment type:\n1.- Individual (one for one)\n2.- Group area");
     return ctx.wizard.next();
   },
 
@@ -54,6 +48,7 @@ const task_wizard = new Scenes.WizardScene<customWizardContext>(
 
   //Get date
   async (ctx) => {
+    ctx.scene.session.members
     ctx.reply("Pick a year:", {
       reply_markup: {
         inline_keyboard: generateCalendarKeyboardAnio(),
@@ -63,43 +58,29 @@ const task_wizard = new Scenes.WizardScene<customWizardContext>(
 
   //Get the Description task
   async (ctx) => {
-    ctx.reply("Entramos a lo último.");
-    /*ctx.scene.session.new_task.description = (
-      ctx.message as Message.TextMessage
-    ).text;*/
-    return await ctx.scene.leave();
+    console.log(ctx.scene.session.date)
+    ctx.reply('Please, write the description of the group.')
+    return ctx.wizard.next()
+  },
+
+  async (ctx) => {
+    ctx.scene.session.new_task.description = (ctx.message as Message.TextMessage).text
+    const response = await createTask(String(ctx.chat?.id),ctx.scene.session.new_task)
+    if (response)
+			await ctx.reply(`The "${ctx.scene.session.new_task.title}" task was registered successfully!`)
+		else
+			await ctx.reply('Error')
+
+    return ctx.scene.leave()
+   
   }
+
 );
 
 task_wizard.on(callbackQuery("data"), (ctx) => {
-  let [actionType, actionValue, days] = ctx.callbackQuery.data.split(":");
-  switch (actionType) {
-    case "anio":
-      ctx.answerCbQuery();
-      ctx.editMessageText("Pick a month:", {
-        reply_markup: {
-          inline_keyboard: generateCalendarKeyboardMonth(actionValue),
-        },
-      });
-      break;
-    case "month":
-      ctx.answerCbQuery();
-      ctx.editMessageText("Pick a day:", {
-        reply_markup: {
-          inline_keyboard: generateCalendarKeyboardDay(actionValue, days),
-        },
-      });
-
-      break;
-    case "day":
-      ctx.scene.session.date = actionValue;
-      ctx.answerCbQuery();
-      ctx.editMessageText("You choose the date: " + actionValue);
-      ctx.wizard.next();
-      return (ctx as any).wizard.steps[ctx.wizard.cursor](ctx);
-      break;
-  }
+  bot_function(ctx)
 });
+
 
 
 

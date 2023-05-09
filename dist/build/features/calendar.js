@@ -1,18 +1,7 @@
 "use strict";
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.generateCalendarKeyboardDay = exports.generateCalendarKeyboardMonth = exports.generateCalendarKeyboardAnio = void 0;
-const bot_1 = __importDefault(require("../bot"));
+exports.bot_function = exports.generateCalendarKeyboardAnio = void 0;
 const date_fns_1 = require("date-fns");
-bot_1.default.command('date', (ctx) => {
-    ctx.reply('Pick a year:', {
-        reply_markup: {
-            inline_keyboard: generateCalendarKeyboardAnio(),
-        },
-    });
-});
 function generateCalendarKeyboardAnio() {
     const keyboard = [];
     const anios = [
@@ -53,7 +42,6 @@ function generateCalendarKeyboardMonth(anio) {
     }
     return keyboard;
 }
-exports.generateCalendarKeyboardMonth = generateCalendarKeyboardMonth;
 function generateCalendarKeyboardDay(anioMonth, days) {
     const keyboard = [];
     const buttonsPerRow = 7;
@@ -74,4 +62,31 @@ function generateCalendarKeyboardDay(anioMonth, days) {
     }
     return keyboard;
 }
-exports.generateCalendarKeyboardDay = generateCalendarKeyboardDay;
+function bot_function(ctx) {
+    let [actionType, actionValue, days] = ctx.callbackQuery.data.split(":");
+    switch (actionType) {
+        case "anio":
+            ctx.answerCbQuery();
+            ctx.editMessageText("Pick a month:", {
+                reply_markup: {
+                    inline_keyboard: generateCalendarKeyboardMonth(actionValue),
+                },
+            });
+            break;
+        case "month":
+            ctx.answerCbQuery();
+            ctx.editMessageText("Pick a day:", {
+                reply_markup: {
+                    inline_keyboard: generateCalendarKeyboardDay(actionValue, days),
+                },
+            });
+            break;
+        case "day":
+            ctx.scene.session.date = actionValue;
+            ctx.answerCbQuery();
+            ctx.editMessageText("You choose the date: " + actionValue);
+            ctx.wizard.next();
+            return ctx.wizard.steps[ctx.wizard.cursor](ctx);
+    }
+}
+exports.bot_function = bot_function;
