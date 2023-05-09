@@ -11,47 +11,8 @@ bot.command('date', (ctx: Context) => {
 		},
 	})
 })
-bot.on(callbackQuery("data"), ctx => {
 
-	let [actionType, actionValue, days] = ctx.callbackQuery.data.split(':')
-	let date
-	switch (actionType) {
-		case 'anio':
-			ctx.answerCbQuery()
-			ctx.editMessageText('Pick a month:', {
-				reply_markup: {
-					inline_keyboard: generateCalendarKeyboardMonth(actionValue),
-				},
-			})
-			break
-		case 'month':
-			ctx.answerCbQuery()
-			ctx.editMessageText('Pick a day:', {
-				reply_markup: {
-					inline_keyboard: generateCalendarKeyboardDay(actionValue, days),
-				},
-			})
-
-			break
-		case 'day':
-			date = actionValue
-			ctx.editMessageText(`Date: ${date}`)
-			ctx.answerCbQuery()
-			break
-	}
-
-})
-function getDate() {
-
-	bot.on(callbackQuery("data"), ctx => {
-		ctx.reply('Pick a year:', {
-			reply_markup: {
-				inline_keyboard: generateCalendarKeyboardAnio(),
-			},
-		})
-	})
-}
-function generateCalendarKeyboardAnio() {
+export function generateCalendarKeyboardAnio() {
 
 	const keyboard = []
 	const anios = [
@@ -71,7 +32,7 @@ function generateCalendarKeyboardAnio() {
 	return keyboard
 }
 
-function generateCalendarKeyboardMonth(anio: any) {
+export function generateCalendarKeyboardMonth(anio: any) {
 
 	const keyboard = []
 	let days
@@ -94,7 +55,7 @@ function generateCalendarKeyboardMonth(anio: any) {
 	return keyboard
 }
 
-function generateCalendarKeyboardDay(anioMonth: any, days: any) {
+export function generateCalendarKeyboardDay(anioMonth: any, days: any) {
 
 	const keyboard = []
 	const buttonsPerRow = 7;

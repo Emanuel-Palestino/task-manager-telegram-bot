@@ -1,7 +1,14 @@
 import { Markup, Scenes, Context } from "telegraf";
+import { callbackQuery } from "telegraf/filters";
 import { Message } from "telegraf/typings/core/types/typegram";
 import { customWizardContext } from "../models/customWizardContext";
 import { createTask } from "../firebase/api";
+import { getAreaMembers } from "../firebase/api";
+import {
+  generateCalendarKeyboardAnio,
+  generateCalendarKeyboardMonth,
+  generateCalendarKeyboardDay,
+} from "./calendar";
 import { assign_members } from "./AssignParticipants";
 import bot from "../bot";
 
@@ -45,17 +52,70 @@ const task_wizard = new Scenes.WizardScene<customWizardContext>(
   //Assign the members
   assign_members,
 
+  //Get date
+  async (ctx) => {
+    ctx.reply("Pick a year:", {
+      reply_markup: {
+        inline_keyboard: generateCalendarKeyboardAnio(),
+      },
+    });
+  },
+
   //Get the Description task
   async (ctx) => {
     ctx.reply("Entramos a lo último.");
-    ctx.scene.session.new_task.description = (
+    /*ctx.scene.session.new_task.description = (
       ctx.message as Message.TextMessage
-    ).text;
+    ).text;*/
     return await ctx.scene.leave();
   }
 );
 
-//task_wizard.on()
+task_wizard.on(callbackQuery("data"), (ctx) => {
+  let [actionType, actionValue, days] = ctx.callbackQuery.data.split(":");
+  switch (actionType) {
+    case "anio":
+      ctx.answerCbQuery();
+      ctx.editMessageText("Pick a month:", {
+        reply_markup: {
+          inline_keyboard: generateCalendarKeyboardMonth(actionValue),
+        },
+      });
+      break;
+    case "month":
+      ctx.answerCbQuery();
+      ctx.editMessageText("Pick a day:", {
+        reply_markup: {
+          inline_keyboard: generateCalendarKeyboardDay(actionValue, days),
+        },
+      });
+
+      break;
+    case "day":
+      ctx.scene.session.date = actionValue;
+      ctx.answerCbQuery();
+      ctx.editMessageText("You choose the date: " + actionValue);
+      ctx.wizard.next();
+      return (ctx as any).wizard.steps[ctx.wizard.cursor](ctx);
+      break;
+  }
+});
+
+task_wizard.action(/\/list_members .+/, async (ctx) => {
+  const area = ctx.match[0].replace("/list_members ", "");
+  const chatId = ctx.chat?.id;
+  console.log('Entramos areas')
+  if (chatId) {
+    const response = await getAreaMembers(String(chatId), String(area));
+    if(response.length>0){
+      const members = response.map((a) => `${a.name}(@${a.username})`).join("\n");
+      return ctx.reply(`Members of the "${area}"`);
+    }
+    else
+      return ctx.reply('No members in this area');
+  }
+});
+
 const stage = new Scenes.Stage<customWizardContext>([task_wizard]);
 bot.use(stage.middleware());
 

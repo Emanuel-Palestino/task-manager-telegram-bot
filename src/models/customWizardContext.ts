@@ -8,6 +8,8 @@ interface MyWizardSession extends Scenes.WizardSessionData {
     bandMember: String
     idGroup:Number
     idArea:Number
+    date:String
+    messageAfterDate:String
 }
 
 export type customWizardContext = Scenes.WizardContext<MyWizardSession>;

@@ -10,6 +10,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.assign_members = void 0;
+const telegraf_1 = require("telegraf");
 const api_1 = require("../firebase/api");
 function members_individual() {
     const person1 = { name: 'Juan', username: '@Juan22' };
@@ -39,7 +40,6 @@ function findIdByName(arr, name) {
     return obj ? obj.id : undefined;
 }
 function assign_members(ctx) {
-    var _a, _b, _c;
     return __awaiter(this, void 0, void 0, function* () {
         if (ctx.message.text == 'Stop' || ctx.message.text == 'stop') {
             ctx.wizard.next();
@@ -51,27 +51,20 @@ function assign_members(ctx) {
             return ctx.wizard.selectStep(ctx.wizard.cursor);
         }
         else if (ctx.message.text == 'Areas') {
-            ctx.scene.session.bandMember = 'Select_areas';
-            //Here list the teams.
-            const list_areas = yield (0, api_1.getAreas)((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id);
-            for (let i = 0; i < list_areas.length; i++)
-                yield ctx.reply('' + list_areas[i].name);
-            yield ctx.reply('Write the name of the team area');
-            return ctx.wizard.selectStep(ctx.wizard.cursor);
-        }
-        else if (ctx.scene.session.bandMember == 'Select_area') {
-            //Show the members
-            const list_areas = yield (0, api_1.getAreas)((_b = ctx.chat) === null || _b === void 0 ? void 0 : _b.id);
-            const idArea = findIdByName(list_areas, ctx.message.text);
-            if (idArea) {
-                const areaMembers = yield (0, api_1.getAreaMembers)((_c = ctx.chat) === null || _c === void 0 ? void 0 : _c.id, idArea);
-                for (let i = 0; i < areaMembers.length; i++)
-                    yield ctx.reply('' + areaMembers[i].name + ' ' + areaMembers[i].username);
-            }
-            else {
-                yield ctx.reply('Write the correct name of the team area');
-                return ctx.wizard.selectStep(ctx.wizard.cursor);
-            }
+            /*ctx.scene.session.bandMember = 'Select_areas'
+              //Here list the teams.
+              const list_areas = await getAreas(ctx.chat?.id)
+      
+              for (let i=0;i<list_areas.length;i++)
+                  await ctx.reply(''+list_areas[i].name)
+      
+              await ctx.reply('Write the name of the team area')
+              return ctx.wizard.selectStep(ctx.wizard.cursor)*/
+            const idTelegramGroup = String(ctx.chat.id);
+            const response = yield (0, api_1.getAreas)(idTelegramGroup);
+            return ctx.reply("Areas:", telegraf_1.Markup.inlineKeyboard(response.map((a) => telegraf_1.Markup.button.callback(a.name, "/list_members " + a.name)), {
+                wrap: (btn, index, currentRow) => currentRow.length >= (index + 1) / 2,
+            }));
         }
         //Here is for the members individual
         else if (ctx.scene.session.bandMember == 'Individual' || ctx.scene.session.bandMember == 'AInd') {

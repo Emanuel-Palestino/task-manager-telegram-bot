@@ -49,7 +49,7 @@ export async function assign_members(ctx: any): Promise<any> {
     }
 
     else if ((ctx.message as Message.TextMessage).text == 'Areas') {
-        ctx.scene.session.bandMember = 'Select_areas'
+      /*ctx.scene.session.bandMember = 'Select_areas'
         //Here list the teams.
         const list_areas = await getAreas(ctx.chat?.id)
 
@@ -57,26 +57,23 @@ export async function assign_members(ctx: any): Promise<any> {
             await ctx.reply(''+list_areas[i].name)
 
         await ctx.reply('Write the name of the team area')
-        return ctx.wizard.selectStep(ctx.wizard.cursor)
-    }
+        return ctx.wizard.selectStep(ctx.wizard.cursor)*/
+      const idTelegramGroup = String(ctx.chat.id);
+      const response = await getAreas(idTelegramGroup);
 
-    else if (ctx.scene.session.bandMember == 'Select_area') {
-        //Show the members
-        const list_areas = await getAreas(ctx.chat?.id)
-        const idArea = findIdByName(list_areas,(ctx.message as Message.TextMessage).text)
-        if(idArea){
-            const areaMembers = await getAreaMembers(ctx.chat?.id,idArea)
-            for (let i=0; i<areaMembers.length;i++)
-                await ctx.reply(''+areaMembers[i].name+' '+ areaMembers[i].username)
-            
-        }
-        else{
-            await ctx.reply('Write the correct name of the team area')
-            return ctx.wizard.selectStep(ctx.wizard.cursor)
-        }
-        
+      return ctx.reply(
+        "Areas:",
+        Markup.inlineKeyboard(
+          response.map((a) =>
+            Markup.button.callback(a.name, "/list_members " + a.name)
+          ),
+          {
+            wrap: (btn, index, currentRow) =>
+              currentRow.length >= (index + 1) / 2,
+          }
+        )
+      );
     }
-
 
     //Here is for the members individual
     else if (ctx.scene.session.bandMember == 'Individual' || ctx.scene.session.bandMember == 'AInd') {
