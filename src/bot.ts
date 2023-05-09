@@ -2,10 +2,11 @@ import { Markup, Scenes, Telegraf, session } from 'telegraf'
 import { initialMessage, teamAddedMessage } from './constants/messages'
 import { addMemberToTeam, registerTelegramGroup } from './firebase/api'
 import { Person } from './models/models'
+import { customWizardContext } from './models/customWizardContext'
 
 
 // Create bot
-const bot = new Telegraf<Scenes.WizardContext>(process.env.TOKEN || '')
+const bot = new Telegraf<customWizardContext>(process.env.TOKEN || '')
 
 
 // Start command, only available in a private chat
