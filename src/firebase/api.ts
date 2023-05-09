@@ -119,6 +119,18 @@ export const getAreaMembers = async (idTelegramGroup: string, areaId: string): P
 	return members
 }
 
+export const getGroupMembers = async (idTelegramGroup: string): Promise<Person[]> => {
+	const groupSnapshot = await database.collection(`team_groups/${idTelegramGroup}/members`).get()
+	const members: Person[] = groupSnapshot.docs.map(doc => ({
+		id: doc.id,
+		name: doc.get('name'),
+		username: doc.get('username'),
+		...doc.data()
+	}))
+
+	return members
+}
+
 export const testGetInfo = async (idTelegramGroup: string): Promise<boolean> => {
 	const teamsSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
 	const team_groups = teamsSnapshot.docs.map(doc => ({
