@@ -11,6 +11,8 @@ const bot_1 = __importDefault(require("./bot"));
 require("./features/testing");
 require("./features/createArea");
 require("./features/listAreas");
+require("./features/randomActivities");
+require("./features/randomMember");
 // Launch bot
 bot_1.default.launch();
 console.log('Bot running');

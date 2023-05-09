@@ -8,6 +8,8 @@ import bot from './bot'
 import './features/testing'
 import './features/createArea'
 import './features/listAreas'
+import './features/randomActivities'
+import './features/randomMember'
 
 // Launch bot
 bot.launch()

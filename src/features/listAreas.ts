@@ -1,16 +1,21 @@
 import { Markup } from "telegraf";
 import bot from '../bot'
-import { createTask, getTasks, getAreas, registerTelegramGroup } from '../firebase/api'
+import { getAreas, getAreaMembers } from '../firebase/api'
+
+let idTelegramGroup : string
 
 bot.command('list_areas', async ctx => {
-    const response = await getAreas(String(ctx.chat.id))
-    console.log(response)
-    return ctx.reply("Areas", Markup.inlineKeyboard(response.map(a => Markup.button.callback(a.name, "/list_member "+a.name)), {
-        wrap: (btn, index, currentRow) => currentRow.length >= (index + 1) / 2,
-    }))
+	idTelegramGroup = String(ctx.chat.id)
+	const response = await getAreas(idTelegramGroup)
+	
+	return ctx.reply("Areas:", Markup.inlineKeyboard(response.map(a => Markup.button.callback(a.name, "/list_members " + a.name)), {
+		wrap: (btn, index, currentRow) => currentRow.length >= (index + 1) / 2,
+	}))
 })
 
-bot.action(/\/list_member ([a-zA-Z\xA1-\xFF]+)/, ctx => {
-    const area = ctx.match[0].split(" ")[1]
-    return ctx.answerCbQuery(`Escojiste el área: ${area} `);
+bot.action(/\/list_members .+/, async ctx => {
+	const area = ctx.match[0].replace("/list_members ", "")
+	const response = await getAreaMembers(idTelegramGroup,String(area))
+	const members = response.map(a => `${a.name}(@${a.username})`).join('\n')
+	return ctx.reply(`Members of the "${area}" area:\n\n${members}`)
 });
