@@ -3,8 +3,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
+exports.generateCalendarKeyboardDay = exports.generateCalendarKeyboardMonth = exports.generateCalendarKeyboardAnio = void 0;
 const bot_1 = __importDefault(require("../bot"));
-const filters_1 = require("telegraf/filters");
 const date_fns_1 = require("date-fns");
 bot_1.default.command('date', (ctx) => {
     ctx.reply('Pick a year:', {
@@ -13,42 +13,6 @@ bot_1.default.command('date', (ctx) => {
         },
     });
 });
-bot_1.default.on((0, filters_1.callbackQuery)("data"), ctx => {
-    let [actionType, actionValue, days] = ctx.callbackQuery.data.split(':');
-    let date;
-    switch (actionType) {
-        case 'anio':
-            ctx.answerCbQuery();
-            ctx.editMessageText('Pick a month:', {
-                reply_markup: {
-                    inline_keyboard: generateCalendarKeyboardMonth(actionValue),
-                },
-            });
-            break;
-        case 'month':
-            ctx.answerCbQuery();
-            ctx.editMessageText('Pick a day:', {
-                reply_markup: {
-                    inline_keyboard: generateCalendarKeyboardDay(actionValue, days),
-                },
-            });
-            break;
-        case 'day':
-            date = actionValue;
-            ctx.editMessageText(`Date: ${date}`);
-            ctx.answerCbQuery();
-            break;
-    }
-});
-function getDate() {
-    bot_1.default.on((0, filters_1.callbackQuery)("data"), ctx => {
-        ctx.reply('Pick a year:', {
-            reply_markup: {
-                inline_keyboard: generateCalendarKeyboardAnio(),
-            },
-        });
-    });
-}
 function generateCalendarKeyboardAnio() {
     const keyboard = [];
     const anios = [
@@ -67,6 +31,7 @@ function generateCalendarKeyboardAnio() {
     }
     return keyboard;
 }
+exports.generateCalendarKeyboardAnio = generateCalendarKeyboardAnio;
 function generateCalendarKeyboardMonth(anio) {
     const keyboard = [];
     let days;
@@ -88,6 +53,7 @@ function generateCalendarKeyboardMonth(anio) {
     }
     return keyboard;
 }
+exports.generateCalendarKeyboardMonth = generateCalendarKeyboardMonth;
 function generateCalendarKeyboardDay(anioMonth, days) {
     const keyboard = [];
     const buttonsPerRow = 7;
@@ -108,3 +74,4 @@ function generateCalendarKeyboardDay(anioMonth, days) {
     }
     return keyboard;
 }
+exports.generateCalendarKeyboardDay = generateCalendarKeyboardDay;

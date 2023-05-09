@@ -2,6 +2,7 @@ import { Scenes } from 'telegraf'
 import bot from '../bot'
 import { createArea } from '../firebase/api'
 import { Message } from 'telegraf/typings/core/types/typegram'
+import { customWizardContext } from '../models/customWizardContext'
 
 
 const validAreaName = (areaName: string): Boolean => {
@@ -12,7 +13,7 @@ const validAreaName = (areaName: string): Boolean => {
 }
 
 
-const createAreaWizard = new Scenes.WizardScene<Scenes.WizardContext>(
+const createAreaWizard = new Scenes.WizardScene<customWizardContext>(
 	'create-area-wizard',
 	async ctx => {
 		await ctx.reply('Please give me the new area name.')
@@ -36,7 +37,7 @@ const createAreaWizard = new Scenes.WizardScene<Scenes.WizardContext>(
 	}
 )
 
-const createAreaStage = new Scenes.Stage<Scenes.WizardContext>([createAreaWizard])
+const createAreaStage = new Scenes.Stage<customWizardContext>([createAreaWizard])
 
 bot.use(createAreaStage.middleware())
 
