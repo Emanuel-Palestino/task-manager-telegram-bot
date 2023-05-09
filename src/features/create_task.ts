@@ -2,7 +2,7 @@ import { Markup, Scenes, Context } from "telegraf";
 import { callbackQuery } from "telegraf/filters";
 import { Message } from "telegraf/typings/core/types/typegram";
 import { customWizardContext } from "../models/customWizardContext";
-import { createTask } from "../firebase/api";
+import { createTask, getGroupMembers } from "../firebase/api";
 import { getAreaMembers } from "../firebase/api";
 import {
   generateCalendarKeyboardAnio,
@@ -101,20 +101,7 @@ task_wizard.on(callbackQuery("data"), (ctx) => {
   }
 });
 
-task_wizard.action(/\/list_members .+/, async (ctx) => {
-  const area = ctx.match[0].replace("/list_members ", "");
-  const chatId = ctx.chat?.id;
-  console.log('Entramos areas')
-  if (chatId) {
-    const response = await getAreaMembers(String(chatId), String(area));
-    if(response.length>0){
-      const members = response.map((a) => `${a.name}(@${a.username})`).join("\n");
-      return ctx.reply(`Members of the "${area}"`);
-    }
-    else
-      return ctx.reply('No members in this area');
-  }
-});
+
 
 const stage = new Scenes.Stage<customWizardContext>([task_wizard]);
 bot.use(stage.middleware());

@@ -14,7 +14,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const filters_1 = require("telegraf/filters");
-const api_1 = require("../firebase/api");
 const calendar_1 = require("./calendar");
 const AssignParticipants_1 = require("./AssignParticipants");
 const bot_1 = __importDefault(require("../bot"));
@@ -89,21 +88,6 @@ task_wizard.on((0, filters_1.callbackQuery)("data"), (ctx) => {
             break;
     }
 });
-task_wizard.action(/\/list_members .+/, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    var _a;
-    const area = ctx.match[0].replace("/list_members ", "");
-    const chatId = (_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id;
-    console.log('Entramos areas');
-    if (chatId) {
-        const response = yield (0, api_1.getAreaMembers)(String(chatId), String(area));
-        if (response.length > 0) {
-            const members = response.map((a) => `${a.name}(@${a.username})`).join("\n");
-            return ctx.reply(`Members of the "${area}"`);
-        }
-        else
-            return ctx.reply('No members in this area');
-    }
-}));
 const stage = new telegraf_1.Scenes.Stage([task_wizard]);
 bot_1.default.use(stage.middleware());
 bot_1.default.command("create_task", (ctx) => __awaiter(void 0, void 0, void 0, function* () {
