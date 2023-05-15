@@ -1,14 +1,13 @@
 import { Message } from "telegraf/typings/core/types/typegram";
 import { Area, Person } from "../models/models";
 import { getAreas, getAreaMembers, getGroupMembers } from "../firebase/api";
+import { Context, Markup } from "telegraf";
 
-function search_member(usernameToFind: String, members: any) {
-    for (const key in members) {
-        if (members.hasOwnProperty(key)) {
-            const person = members[key];
-            if (person.username == usernameToFind) return key;
-        }
-    }
+function search_member(usernameToFind: String, members:Person[] ) {
+    const auxiliar = usernameToFind.replace('@','')
+    for (let i = 0; i<members.length; i++)
+        if(members[i].username == auxiliar)
+            return members[i]
     return undefined;
 }
 
@@ -17,81 +16,129 @@ function findIdByName(arr: Area[], name: string): string | undefined {
     return obj ? obj.id : undefined;
 }
 
+export async function list_areas_mebers(ctx:any){
+    const area = ctx.match[0].replace("/list_members ", "")
+    const idTelegramGroup = String(ctx.chat?.id)
+	const response = await getAreaMembers(idTelegramGroup,String(area))
+    if(response.length==0){
+        return ctx.reply('The area members is empty.\nWrite "Individual" or "Areas" for the selection of members. ')
+    }
+    else{
+        const members = response.map(a => `${a.name}(@${a.username})`).join('\n')
+	    return ctx.reply(`Members of the "${area}" area:\n\n${members}`)
+    }
+}
+
 export async function assign_members(ctx: any): Promise<any> {
-    let areaMembersG: any;
-    if ((ctx.message as Message.TextMessage).text == "Stop" || (ctx.message as Message.TextMessage).text == "stop") {
+    if ((ctx.message as Message.TextMessage).text == "Stop") {
         ctx.wizard.next();
         return ctx.wizard.steps[ctx.wizard.cursor](ctx);
-
-    } else if ((ctx.message as Message.TextMessage).text == "Individual") {
-        console.log(ctx.chat?.id);
-        ctx.scene.session.bandMember = "Individual";
-        await ctx.reply(
-            "Type the members' usernames (using @), one by one. To finish, type Stop."
-        );
-        return ctx.wizard.selectStep(ctx.wizard.cursor);
-
-    } else if ((ctx.message as Message.TextMessage).text == "Areas") {
-        ctx.scene.session.bandMember = "Select_areas";
-        //Here list the teams.
-        const list_areas = await getAreas(ctx.chat?.id);
-
-        for (let i = 0; i < list_areas.length; i++)
-            await ctx.reply("" + list_areas[i].name);
-
-        await ctx.reply("Write the name of the team area");
-        return ctx.wizard.selectStep(ctx.wizard.cursor);
-
-    } else if (ctx.scene.session.bandMember == "Select_areas") {
-        console.log(ctx.scene.session.bandMember)
-        const list_areas = await getAreas(ctx.chat?.id);
-        const areasMembers = findIdByName(list_areas,(ctx.message as Message.TextMessage).text);
-        areaMembersG = getAreaMembers(ctx.chat?.id,String(areasMembers))
+    
+    } 
+    
+    //Selección Individual
+    else if (ctx.scene.session.bandMember == 'Choice_options') {
+        if((ctx.message as Message.TextMessage).text == "1"){
+            ctx.scene.session.bandMember = "Individual"
+            await ctx.reply("Type the members' usernames (using @), one by one. To finish, type Stop.")
+        }
         
-        if (areasMembers) {
-            
-            for (let i=0; i<areaMembersG.length;i++)
-                await ctx.reply(''+areaMembersG[i].name+' '+ areaMembersG[i].username)
-            ctx.reply("Enter the number you are interested in: \n1. Get all members.\n2. Add one by one");
-            ctx.scene.session.bandMember = "Select_number";
-            return ctx.wizard.selectStep(ctx.wizard.cursor);
-        } else {
-            ctx.reply("The area does not exist type again");
-            return ctx.wizard.selectStep(ctx.wizard.cursor);
+        else if((ctx.message as Message.TextMessage).text == "2"){
+            ctx.scene.session.bandMember = "Select_areas";
+            const list_areas = await getAreas(ctx.chat?.id);
+            let listAreas: String = ''
+            for (let i = 0; i < list_areas.length; i++)
+                listAreas += String(i + 1) + ".- " + list_areas[i].name + "\n"
+
+            await ctx.reply(listAreas + "\n" + "Write the number of the team area")
         }
 
-    } else if (ctx.scene.session.bandMember == "Select_number") {
-        if ((ctx.message as Message.TextMessage).text == "1") {
-            if (areaMembersG?.length > 1) ctx.scene.session.members = areaMembersG;
-            else {
-                await ctx.reply("Area members empty");
+        else
+            await ctx.reply("Wrong number, please reescribe the option")
+        
+        
+        return ctx.wizard.selectStep(ctx.wizard.cursor);
+
+    } 
+    
+    //Selección Areas
+   
+    else if (ctx.scene.session.bandMember == "Select_areas"){
+        const list_areas = await getAreas(ctx.chat?.id);
+        const index = Number((ctx.message as Message.TextMessage).text)
+        
+        //Si la opción de la area está dentro del rango
+        if((index-1)<list_areas.length){
+            let show_members = ''
+            ctx.scene.session.idArea = String(list_areas[index-1].id)
+            const list_area_members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idArea)
+
+            console.log('*'+list_area_members)
+            //Si existen miembros del área
+            if(0 < list_area_members.length){
+                for(let i = 0; i< list_area_members.length; i++)
+                    show_members += String(i+1)+".- @" + list_area_members[i].username + '\n'
+                show_members += '\nPress\n1.- Add all members\n2.- Add one by one'
+                ctx.reply(show_members)
+                ctx.scene.session.bandMember = "Select_option_assign"
+            }
+            else
+                await ctx.reply("The area is empty\nWrite the number for the member assignment type:\n1.- Individual (one for one)\n2.- Group area")
+        }
+        else
+            await ctx.reply("The area does not exist, please rewrite the number")
+
+        return ctx.wizard.selectStep(ctx.wizard.cursor)
+    }
+
+    //Tipo de asignación para el área
+    else  if(ctx.scene.session.bandMember == "Select_option_assign"){
+            //Retorna todos los miembros
+            if((ctx.message as Message.TextMessage).text == '1'){
+                ctx.scene.session.members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idArea)
+                console.log(ctx.scene.session.members)
                 ctx.wizard.next();
                 return ctx.wizard.steps[ctx.wizard.cursor](ctx);
             }
-        } else ctx.scene.session.bandMember == "2";
-    }
-
-    //Here is for the members individual
-    else if (
-        ctx.scene.session.bandMember == "Individual" ||
-        ctx.scene.session.bandMember == "2"
-    ) {
-        const username = (ctx.message as Message.TextMessage).text;
-        let members: any;
-
-        if (ctx.scene.session.bandMember == "Individual")
-            members = await getGroupMembers(String(ctx.chat?.id));
-
-        if (username.startsWith("@")) {
-            const keyMember = search_member(username, members);
-
-            //Si no está
-            if (!keyMember) await ctx.reply("undefined user, type it again");
-            else ctx.scene.session.members[keyMember] = members[keyMember];
+            
+            //Los aregará uno por uno
+            else{
+                ctx.scene.session.bandMember = "Area_individual"
+                return ctx.wizard.selectStep(ctx.wizard.cursor)
+            }
         }
 
-        return ctx.wizard.selectStep(ctx.wizard.cursor);
-    } else {
+    //Agregar manualmente uno por uno.
+    else if(ctx.scene.session.bandMember == "Area_individual" || ctx.scene.session.bandMember == "Individual"){
+            let list_members: Person[]
+            const username = (ctx.message as Message.TextMessage).text;
+
+            if(ctx.scene.session.bandMember == "Area_individual")
+                list_members = await getAreaMembers(ctx.chat?.id,ctx.scene.session.idArea)
+            else
+                list_members = await getGroupMembers(ctx.chat?.id)
+
+            const memberFind = search_member(username, list_members);
+
+                //Si no está
+            if (!memberFind) 
+                await ctx.reply("undefined user, type it again");
+                
+            else {
+                if(ctx.scene.session.members.includes(memberFind))
+                    await ctx.reply("The user is already on the list, type it again.");
+                else
+                    ctx.scene.session.members.push(memberFind)
+                    
+            }
+
+            return ctx.wizard.selectStep(ctx.wizard.cursor)
+    }
+
+
+    
+    //Si no escriben una opción válida
+    else {
         await ctx.reply("Incorrect option, please write the correct message");
         return ctx.wizard.selectStep(ctx.wizard.cursor);
     }

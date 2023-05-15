@@ -12,6 +12,7 @@ import './features/listAreas'
 import './features/randomActivities'
 import './features/randomMember'
 import './features/calendar'
+import './features/assignMemberArea'
 
 // Launch bot
 bot.launch()

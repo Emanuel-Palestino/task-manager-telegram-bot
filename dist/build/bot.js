@@ -30,8 +30,8 @@ bot.command('register_workteam', (ctx) => __awaiter(void 0, void 0, void 0, func
     // Register team
     const response = yield (0, api_1.registerTelegramGroup)(String(id));
     // Registration failed
-    if (!response)
-        return yield ctx.reply('Registration failed or workteam already registered.');
+    //if (!response)
+    //	return await ctx.reply('Registration failed or workteam already registered.')
     // Send successfully message
     yield ctx.reply(messages_1.teamAddedMessage[0]);
     const message = yield ctx.replyWithHTML(messages_1.teamAddedMessage[1], telegraf_1.Markup.inlineKeyboard([

@@ -15,6 +15,7 @@ require("./features/listAreas");
 require("./features/randomActivities");
 require("./features/randomMember");
 require("./features/calendar");
+require("./features/assignMemberArea");
 // Launch bot
 bot_1.default.launch();
 console.log('Bot running');

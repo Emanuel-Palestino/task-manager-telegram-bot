@@ -3,15 +3,6 @@ import { Telegraf, Context } from 'telegraf'
 import { callbackQuery } from "telegraf/filters"
 import { getDaysInMonth } from "date-fns";
 
-bot.command('date', (ctx: Context) => {
-
-	ctx.reply('Pick a year:', {
-		reply_markup: {
-			inline_keyboard: generateCalendarKeyboardAnio(),
-		},
-	})
-})
-
 export function generateCalendarKeyboardAnio() {
 
 	const keyboard = []
@@ -32,7 +23,7 @@ export function generateCalendarKeyboardAnio() {
 	return keyboard
 }
 
-export function generateCalendarKeyboardMonth(anio: any) {
+function generateCalendarKeyboardMonth(anio: any) {
 
 	const keyboard = []
 	let days
@@ -55,7 +46,7 @@ export function generateCalendarKeyboardMonth(anio: any) {
 	return keyboard
 }
 
-export function generateCalendarKeyboardDay(anioMonth: any, days: any) {
+function generateCalendarKeyboardDay(anioMonth: any, days: any) {
 
 	const keyboard = []
 	const buttonsPerRow = 7;
@@ -74,4 +65,33 @@ export function generateCalendarKeyboardDay(anioMonth: any, days: any) {
 		keyboard.push(row);
 	}
 	return keyboard;
+}
+
+export function bot_function(ctx:any){
+	let [actionType, actionValue, days] = ctx.callbackQuery.data.split(":");
+	switch (actionType) {
+	  case "anio":
+		ctx.answerCbQuery();
+		ctx.editMessageText("Pick a month:", {
+		  reply_markup: {
+			inline_keyboard: generateCalendarKeyboardMonth(actionValue),
+		  },
+		});
+		break;
+	  case "month":
+		ctx.answerCbQuery();
+		ctx.editMessageText("Pick a day:", {
+		  reply_markup: {
+			inline_keyboard: generateCalendarKeyboardDay(actionValue, days),
+		  },
+		});
+  
+		break;
+	  case "day":
+		ctx.scene.session.date = actionValue;
+		ctx.answerCbQuery();
+		ctx.editMessageText("You choose the date: " + actionValue);
+		ctx.wizard.next();
+		return (ctx as any).wizard.steps[ctx.wizard.cursor](ctx);
+	}
 }

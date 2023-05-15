@@ -14,6 +14,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 const telegraf_1 = require("telegraf");
 const filters_1 = require("telegraf/filters");
+const api_1 = require("../firebase/api");
 const calendar_1 = require("./calendar");
 const AssignParticipants_1 = require("./AssignParticipants");
 const bot_1 = __importDefault(require("../bot"));
@@ -29,7 +30,8 @@ const task_wizard = new telegraf_1.Scenes.WizardScene("create_task", (ctx) => __
         description: "",
         participants: {},
     };
-    ctx.scene.session.members = {};
+    ctx.scene.session.members = [];
+    ctx.scene.session.bandMember = 'Choice_options';
     return ctx.wizard.next();
 }), 
 //Get the Task name
@@ -39,13 +41,14 @@ const task_wizard = new telegraf_1.Scenes.WizardScene("create_task", (ctx) => __
         return ctx.wizard.selectStep(1);
     }
     ctx.scene.session.new_task.title = ctx.message.text;
-    yield ctx.reply("Write if you want 'Individual' or 'Areas' for the selection of members.");
+    yield ctx.reply("Write the numer for the member assignment type:\n1.- Individual (one for one)\n2.- Group area");
     return ctx.wizard.next();
 }), 
 //Assign the members
 AssignParticipants_1.assign_members, 
 //Get date
 (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    ctx.scene.session.members;
     ctx.reply("Pick a year:", {
         reply_markup: {
             inline_keyboard: (0, calendar_1.generateCalendarKeyboardAnio)(),
@@ -54,39 +57,21 @@ AssignParticipants_1.assign_members,
 }), 
 //Get the Description task
 (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    ctx.reply("Entramos a lo último.");
-    /*ctx.scene.session.new_task.description = (
-      ctx.message as Message.TextMessage
-    ).text;*/
-    return yield ctx.scene.leave();
+    console.log(ctx.scene.session.date);
+    ctx.reply('Please, write the description of the group.');
+    return ctx.wizard.next();
+}), (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    var _a;
+    ctx.scene.session.new_task.description = ctx.message.text;
+    const response = yield (0, api_1.createTask)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id), ctx.scene.session.new_task);
+    if (response)
+        yield ctx.reply(`The "${ctx.scene.session.new_task.title}" task was registered successfully!`);
+    else
+        yield ctx.reply('Error');
+    return ctx.scene.leave();
 }));
 task_wizard.on((0, filters_1.callbackQuery)("data"), (ctx) => {
-    let [actionType, actionValue, days] = ctx.callbackQuery.data.split(":");
-    switch (actionType) {
-        case "anio":
-            ctx.answerCbQuery();
-            ctx.editMessageText("Pick a month:", {
-                reply_markup: {
-                    inline_keyboard: (0, calendar_1.generateCalendarKeyboardMonth)(actionValue),
-                },
-            });
-            break;
-        case "month":
-            ctx.answerCbQuery();
-            ctx.editMessageText("Pick a day:", {
-                reply_markup: {
-                    inline_keyboard: (0, calendar_1.generateCalendarKeyboardDay)(actionValue, days),
-                },
-            });
-            break;
-        case "day":
-            ctx.scene.session.date = actionValue;
-            ctx.answerCbQuery();
-            ctx.editMessageText("You choose the date: " + actionValue);
-            ctx.wizard.next();
-            return ctx.wizard.steps[ctx.wizard.cursor](ctx);
-            break;
-    }
+    (0, calendar_1.bot_function)(ctx);
 });
 const stage = new telegraf_1.Scenes.Stage([task_wizard]);
 bot_1.default.use(stage.middleware());
