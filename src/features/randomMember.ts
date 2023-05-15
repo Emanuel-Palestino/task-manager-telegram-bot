@@ -2,21 +2,22 @@ import { assign_members } from "./AssignParticipants";
 import { Scenes } from "telegraf"
 import { Message } from 'telegraf/typings/core/types/typegram'
 import bot from '../bot'
+import { customWizardContext } from "../models/customWizardContext";
 
 let listMembers: any[]
 
 function shuffle<T>(array: T[]): T[] {
 	const shuffled = [...array];
-	
-	for (let i = shuffled.length - 1; i > 0; i--) {
-	  const j = Math.floor(Math.random() * (i + 1));
-	  [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
-	}
-	
-	return shuffled;
-  }
 
-const randomMember = new Scenes.WizardScene<Scenes.WizardContext>(
+	for (let i = shuffled.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+	}
+
+	return shuffled;
+}
+
+const randomMember = new Scenes.WizardScene<customWizardContext>(
 	'random_member',
 	async (ctx) => {
 		await ctx.reply("Please, select the members.")
@@ -47,7 +48,7 @@ const randomMember = new Scenes.WizardScene<Scenes.WizardContext>(
 	},
 )
 
-const stage = new Scenes.Stage<Scenes.WizardContext>([randomMember])
+const stage = new Scenes.Stage<customWizardContext>([randomMember])
 bot.use(stage.middleware())
 
 bot.command('random_member', async ctx => {

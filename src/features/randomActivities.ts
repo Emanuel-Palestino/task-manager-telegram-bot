@@ -2,17 +2,18 @@ import { assign_members } from "./AssignParticipants";
 import { Scenes } from "telegraf"
 import { Message } from 'telegraf/typings/core/types/typegram'
 import bot from '../bot'
+import { customWizardContext } from "../models/customWizardContext";
 
 let listActivities: any[]
 let listMembers: any[]
 
-const randomActivities = new Scenes.WizardScene<Scenes.WizardContext>(
+const randomActivities = new Scenes.WizardScene<customWizardContext>(
 	'random_activities',
 	async (ctx) => {
 		await ctx.reply("Please, enter the activities separated by a line break.")
 		return ctx.wizard.next()
 	},
-	
+
 	async (ctx) => {
 		listActivities = (ctx.message as Message.TextMessage).text.split("\n")
 		await ctx.reply("Please, select the members with whom the activities will be drawn.")
@@ -23,7 +24,7 @@ const randomActivities = new Scenes.WizardScene<Scenes.WizardContext>(
 
 	async (ctx) => {
 		listMembers = ctx.scene.session.members
-		
+
 		const shuffle = (array: any) => {
 			array.sort(() => Math.random() - 0.5);
 		}
@@ -35,25 +36,25 @@ const randomActivities = new Scenes.WizardScene<Scenes.WizardContext>(
 		listActivities.forEach((activities, index) => {
 			const member = listMembers[index % listMembers.length]
 			const key = `${member.name}(@${member.username})`
-			if(!assignments.has(key))
+			if (!assignments.has(key))
 				assignments.set(key, activities);
-			else{
+			else {
 				const assignment = assignments.get(key)
 				assignments.set(key, `${assignment}, ${activities}`);
 			}
 		});
-		
+
 		let message = '\n\n';
-		assignments.forEach((activity,member) => {
+		assignments.forEach((activity, member) => {
 			message += `${member} => ${activity}\n`;
-			});
-		
+		});
+
 		await ctx.reply(`The draw was as follows:${message}`)
 		return await ctx.scene.leave()
 	},
 )
 
-const stage = new Scenes.Stage<Scenes.WizardContext>([randomActivities])
+const stage = new Scenes.Stage<customWizardContext>([randomActivities])
 bot.use(stage.middleware())
 
 bot.command('random_activities', async ctx => {

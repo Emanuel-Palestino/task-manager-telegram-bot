@@ -98,4 +98,4 @@ const teamGroup: TeamGroup = {
 			username: 'hassam',
 		},
 	},
-};
+}

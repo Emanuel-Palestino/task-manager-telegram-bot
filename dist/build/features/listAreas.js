@@ -8,8 +8,13 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
 };
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.list_areas = void 0;
+const telegraf_1 = require("telegraf");
+const bot_1 = __importDefault(require("../bot"));
 const api_1 = require("../firebase/api");
 function list_areas(ctx) {
     var _a, _b;
@@ -42,13 +47,6 @@ function list_areas(ctx) {
     });
 }
 exports.list_areas = list_areas;
-var __importDefault = (this && this.__importDefault) || function (mod) {
-    return (mod && mod.__esModule) ? mod : { "default": mod };
-};
-Object.defineProperty(exports, "__esModule", { value: true });
-const telegraf_1 = require("telegraf");
-const bot_1 = __importDefault(require("../bot"));
-const api_1 = require("../firebase/api");
 let idTelegramGroup;
 bot_1.default.command('list_areas', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     idTelegramGroup = String(ctx.chat.id);
