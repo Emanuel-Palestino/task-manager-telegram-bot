@@ -1,4 +1,7 @@
 "use strict";
+/*
+*	Module for list work spaces and members
+*/
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -22,7 +25,7 @@ function list_areas(ctx) {
         //Selección Individual
         if (ctx.scene.session.bandMember == undefined) {
             ctx.scene.session.bandMember = "Select_areas";
-            const list_areas = yield (0, api_1.getAreas)((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id);
+            const list_areas = yield (0, api_1.getWorkSpaces)((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id);
             let listAreas = '';
             for (let i = 0; i < list_areas.length; i++)
                 listAreas += String(i + 1) + ".- " + list_areas[i].name + "\n";
@@ -31,7 +34,7 @@ function list_areas(ctx) {
         }
         //Selección Areas
         else if (ctx.scene.session.bandMember == "Select_areas") {
-            const list_areas = yield (0, api_1.getAreas)((_b = ctx.chat) === null || _b === void 0 ? void 0 : _b.id);
+            const list_areas = yield (0, api_1.getWorkSpaces)((_b = ctx.chat) === null || _b === void 0 ? void 0 : _b.id);
             const index = Number(ctx.message.text);
             //Si la opción de la area está dentro del rango
             if ((index - 1) < list_areas.length) {
@@ -48,16 +51,20 @@ function list_areas(ctx) {
 }
 exports.list_areas = list_areas;
 let idTelegramGroup;
-bot_1.default.command('list_areas', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    idTelegramGroup = String(ctx.chat.id);
-    const response = yield (0, api_1.getAreas)(idTelegramGroup);
-    return ctx.reply("Areas:", telegraf_1.Markup.inlineKeyboard(response.map(a => telegraf_1.Markup.button.callback(a.name, "/list_members " + a.name)), {
+let messageId;
+bot_1.default.command('list_workspaces', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    const groupId = String(ctx.chat.id);
+    const workSpaces = yield (0, api_1.getWorkSpaces)(groupId);
+    const messageReplied = yield ctx.reply('Work Spaces:', telegraf_1.Markup.inlineKeyboard(workSpaces.map(a => telegraf_1.Markup.button.callback(a.name, "/list_members " + a.name)), {
         wrap: (btn, index, currentRow) => currentRow.length >= (index + 1) / 2,
     }));
+    messageId = messageReplied.message_id;
+    return;
 }));
 bot_1.default.action(/\/list_members .+/, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
+    bot_1.default.telegram.deleteMessage(idTelegramGroup, messageId);
     const area = ctx.match[0].replace("/list_members ", "");
-    const response = yield (0, api_1.getAreaMembers)(idTelegramGroup, String(area));
+    const response = yield (0, api_1.getWorkSpacesMembers)(idTelegramGroup, String(area));
     const members = response.map(a => `${a.name}(@${a.username})`).join('\n');
-    return ctx.reply(`Members of the "${area}" area:\n\n${members}`);
+    return ctx.reply(`Members of the "${area}" work space:\n\n${members}`);
 }));

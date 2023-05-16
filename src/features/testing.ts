@@ -1,7 +1,7 @@
 import bot from '../bot'
-import { addMemberToArea, getAreaMembers, getAreas, getTasks, testGetInfo } from '../firebase/api'
+import { getWorkSpacesMembers, getTasks, testGetInfo } from '../firebase/api'
 bot.command('test', async ctx => {
-	const response = await getAreaMembers(String(ctx.chat.id), 'sIAo1wfvK6vt4qB5GsFf')
+	const response = await getWorkSpacesMembers(String(ctx.chat.id), 'sIAo2wfvK6vt4qB5GsFf')
 	console.log(response)
 	return await ctx.reply('listo')
 })

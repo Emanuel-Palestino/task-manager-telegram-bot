@@ -27,7 +27,7 @@ function list_areas_mebers(ctx) {
     return __awaiter(this, void 0, void 0, function* () {
         const area = ctx.match[0].replace("/list_members ", "");
         const idTelegramGroup = String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id);
-        const response = yield (0, api_1.getAreaMembers)(idTelegramGroup, String(area));
+        const response = yield (0, api_1.getWorkSpacesMembers)(idTelegramGroup, String(area));
         if (response.length == 0) {
             return ctx.reply('The area members is empty.\nWrite "Individual" or "Areas" for the selection of members. ');
         }
@@ -53,7 +53,7 @@ function assign_members(ctx) {
             }
             else if (ctx.message.text == "2") {
                 ctx.scene.session.bandMember = "Select_areas";
-                const list_areas = yield (0, api_1.getAreas)((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id);
+                const list_areas = yield (0, api_1.getWorkSpaces)((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id);
                 let listAreas = '';
                 for (let i = 0; i < list_areas.length; i++)
                     listAreas += String(i + 1) + ".- " + list_areas[i].name + "\n";
@@ -65,13 +65,13 @@ function assign_members(ctx) {
         }
         //Selección Areas
         else if (ctx.scene.session.bandMember == "Select_areas") {
-            const list_areas = yield (0, api_1.getAreas)((_b = ctx.chat) === null || _b === void 0 ? void 0 : _b.id);
+            const list_areas = yield (0, api_1.getWorkSpaces)((_b = ctx.chat) === null || _b === void 0 ? void 0 : _b.id);
             const index = Number(ctx.message.text);
             //Si la opción de la area está dentro del rango
             if ((index - 1) < list_areas.length) {
                 let show_members = '';
                 ctx.scene.session.idArea = String(list_areas[index - 1].id);
-                const list_area_members = yield (0, api_1.getAreaMembers)((_c = ctx.chat) === null || _c === void 0 ? void 0 : _c.id, ctx.scene.session.idArea);
+                const list_area_members = yield (0, api_1.getWorkSpacesMembers)((_c = ctx.chat) === null || _c === void 0 ? void 0 : _c.id, ctx.scene.session.idArea);
                 console.log('*' + list_area_members);
                 //Si existen miembros del área
                 if (0 < list_area_members.length) {
@@ -92,7 +92,7 @@ function assign_members(ctx) {
         else if (ctx.scene.session.bandMember == "Select_option_assign") {
             //Retorna todos los miembros
             if (ctx.message.text == '1') {
-                ctx.scene.session.members = yield (0, api_1.getAreaMembers)((_d = ctx.chat) === null || _d === void 0 ? void 0 : _d.id, ctx.scene.session.idArea);
+                ctx.scene.session.members = yield (0, api_1.getWorkSpacesMembers)((_d = ctx.chat) === null || _d === void 0 ? void 0 : _d.id, ctx.scene.session.idArea);
                 console.log(ctx.scene.session.members);
                 ctx.wizard.next();
                 return ctx.wizard.steps[ctx.wizard.cursor](ctx);
@@ -108,7 +108,7 @@ function assign_members(ctx) {
             let list_members;
             const username = ctx.message.text;
             if (ctx.scene.session.bandMember == "Area_individual")
-                list_members = yield (0, api_1.getAreaMembers)((_e = ctx.chat) === null || _e === void 0 ? void 0 : _e.id, ctx.scene.session.idArea);
+                list_members = yield (0, api_1.getWorkSpacesMembers)((_e = ctx.chat) === null || _e === void 0 ? void 0 : _e.id, ctx.scene.session.idArea);
             else
                 list_members = yield (0, api_1.getGroupMembers)((_f = ctx.chat) === null || _f === void 0 ? void 0 : _f.id);
             const memberFind = search_member(username, list_members);

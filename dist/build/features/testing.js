@@ -15,7 +15,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const bot_1 = __importDefault(require("../bot"));
 const api_1 = require("../firebase/api");
 bot_1.default.command('test', (ctx) => __awaiter(void 0, void 0, void 0, function* () {
-    const response = yield (0, api_1.getAreaMembers)(String(ctx.chat.id), 'sIAo1wfvK6vt4qB5GsFf');
+    const response = yield (0, api_1.getWorkSpacesMembers)(String(ctx.chat.id), 'sIAo2wfvK6vt4qB5GsFf');
     console.log(response);
     return yield ctx.reply('listo');
 }));

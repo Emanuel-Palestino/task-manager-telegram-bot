@@ -3,7 +3,7 @@ import { customWizardContext } from '../models/customWizardContext'
 import { assign_members } from './AssignParticipants'
 import bot from '../bot'
 import { list_areas } from './listAreas'
-import { addMemberToArea } from '../firebase/api'
+import { addMemberToWorkSpace } from '../firebase/api'
 
 const areaAss_wizard = new Scenes.WizardScene<customWizardContext>("assign_area",
 	list_areas,
@@ -20,7 +20,7 @@ const areaAss_wizard = new Scenes.WizardScene<customWizardContext>("assign_area"
 
 	async (ctx) => {
 		for (let i = 0; i < ctx.scene.session.members.length; i++) {
-			const response = await addMemberToArea(String(ctx.chat?.id), ctx.scene.session.members[i], ctx.scene.session.idArea)
+			const response = await addMemberToWorkSpace(String(ctx.chat?.id), ctx.scene.session.members[i], ctx.scene.session.idArea)
 			if (!response)
 				await ctx.reply('Error')
 		}

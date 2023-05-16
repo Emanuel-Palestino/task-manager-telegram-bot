@@ -69,7 +69,7 @@ export const addMemberToTeam = async (idTelegramGroup: string, member: Person): 
 	return true
 }
 
-export const addMemberToArea = async (idTelegramGroup: string, member: Person, areaId: string): Promise<boolean> => {
+export const addMemberToWorkSpace = async (idTelegramGroup: string, member: Person, workSpaceId: string): Promise<boolean> => {
 	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
 
 	// team group is not registered
@@ -77,17 +77,17 @@ export const addMemberToArea = async (idTelegramGroup: string, member: Person, a
 		return false
 
 	// Create area doc in areasMembers collection
-	await teamGroupDoc.collection('areasMembers').doc(areaId).set({})
+	await teamGroupDoc.collection('workSpaceMembers').doc(workSpaceId).set({})
 
 	// Add member to area
-	await teamGroupDoc.collection(`areasMembers/${areaId}/members`).doc(member.id || '').set(member)
+	await teamGroupDoc.collection(`workSpaceMembers/${workSpaceId}/members`).doc(member.id || '').set(member)
 	return true
 }
 
 
 /* GET METHODS */
-export const getAreas = async (idTelegramGroup: string): Promise<WorkSpace[]> => {
-	const groupAreasSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
+export const getWorkSpaces = async (idTelegramGroup: string): Promise<WorkSpace[]> => {
+	const groupAreasSnapshot = await database.collection(`team_groups/${idTelegramGroup}/workspaces`).get()
 	const groupAreas: WorkSpace[] = groupAreasSnapshot.docs.map(doc => ({
 		id: doc.id,
 		name: doc.get('name'),
@@ -107,8 +107,8 @@ export const getTasks = async (idTelegramGroup: string): Promise<Task[]> => {
 	return groupTasks
 }
 
-export const getAreaMembers = async (idTelegramGroup: string, areaId: string): Promise<Person[]> => {
-	const groupAreasMembersSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areasMembers/${areaId}/members`).get()
+export const getWorkSpacesMembers = async (idTelegramGroup: string, areaId: string): Promise<Person[]> => {
+	const groupAreasMembersSnapshot = await database.collection(`team_groups/${idTelegramGroup}/workSpaceMembers/${areaId}/members`).get()
 	const members: Person[] = groupAreasMembersSnapshot.docs.map(doc => ({
 		id: doc.id,
 		name: doc.get('name'),

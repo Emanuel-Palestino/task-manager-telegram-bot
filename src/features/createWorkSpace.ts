@@ -1,3 +1,7 @@
+/* 
+*	Module for create work space
+*/
+
 import { Scenes } from 'telegraf'
 import bot from '../bot'
 import { createWorkSpace } from '../firebase/api'

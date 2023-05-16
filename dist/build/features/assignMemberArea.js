@@ -25,7 +25,7 @@ const areaAss_wizard = new telegraf_1.Scenes.WizardScene("assign_area", listArea
 }), AssignParticipants_1.assign_members, (ctx) => __awaiter(void 0, void 0, void 0, function* () {
     var _a;
     for (let i = 0; i < ctx.scene.session.members.length; i++) {
-        const response = yield (0, api_1.addMemberToArea)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id), ctx.scene.session.members[i], ctx.scene.session.idArea);
+        const response = yield (0, api_1.addMemberToWorkSpace)(String((_a = ctx.chat) === null || _a === void 0 ? void 0 : _a.id), ctx.scene.session.members[i], ctx.scene.session.idArea);
         if (!response)
             yield ctx.reply('Error');
     }

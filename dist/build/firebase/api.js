@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.testGetInfo = exports.getGroupMembers = exports.getAreaMembers = exports.getTasks = exports.getAreas = exports.addMemberToArea = exports.addMemberToTeam = exports.createWorkSpace = exports.createTask = exports.registerTelegramGroup = exports.isMemberRegistered = void 0;
+exports.testGetInfo = exports.getGroupMembers = exports.getWorkSpacesMembers = exports.getTasks = exports.getWorkSpaces = exports.addMemberToWorkSpace = exports.addMemberToTeam = exports.createWorkSpace = exports.createTask = exports.registerTelegramGroup = exports.isMemberRegistered = void 0;
 const setup_1 = require("./setup");
 const isTeamGroupRegistered = (teamGroupDoc) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupSnapshot = yield teamGroupDoc.get();
@@ -65,37 +65,37 @@ const addMemberToTeam = (idTelegramGroup, member) => __awaiter(void 0, void 0, v
     return true;
 });
 exports.addMemberToTeam = addMemberToTeam;
-const addMemberToArea = (idTelegramGroup, member, areaId) => __awaiter(void 0, void 0, void 0, function* () {
+const addMemberToWorkSpace = (idTelegramGroup, member, workSpaceId) => __awaiter(void 0, void 0, void 0, function* () {
     const teamGroupDoc = setup_1.database.collection('team_groups').doc(idTelegramGroup);
     // team group is not registered
     if (!(yield isTeamGroupRegistered(teamGroupDoc)))
         return false;
     // Create area doc in areasMembers collection
-    yield teamGroupDoc.collection('areasMembers').doc(areaId).set({});
+    yield teamGroupDoc.collection('workSpaceMembers').doc(workSpaceId).set({});
     // Add member to area
-    yield teamGroupDoc.collection(`areasMembers/${areaId}/members`).doc(member.id || '').set(member);
+    yield teamGroupDoc.collection(`workSpaceMembers/${workSpaceId}/members`).doc(member.id || '').set(member);
     return true;
 });
-exports.addMemberToArea = addMemberToArea;
+exports.addMemberToWorkSpace = addMemberToWorkSpace;
 /* GET METHODS */
-const getAreas = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
-    const groupAreasSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/areas`).get();
+const getWorkSpaces = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
+    const groupAreasSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/workspaces`).get();
     const groupAreas = groupAreasSnapshot.docs.map(doc => (Object.assign({ id: doc.id, name: doc.get('name') }, doc.data())));
     return groupAreas;
 });
-exports.getAreas = getAreas;
+exports.getWorkSpaces = getWorkSpaces;
 const getTasks = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
     const groupTasksSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/tasks`).get();
     const groupTasks = groupTasksSnapshot.docs.map(doc => (Object.assign({ id: doc.id, description: doc.get('description'), title: doc.get('title') }, doc.data())));
     return groupTasks;
 });
 exports.getTasks = getTasks;
-const getAreaMembers = (idTelegramGroup, areaId) => __awaiter(void 0, void 0, void 0, function* () {
-    const groupAreasMembersSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/areasMembers/${areaId}/members`).get();
+const getWorkSpacesMembers = (idTelegramGroup, areaId) => __awaiter(void 0, void 0, void 0, function* () {
+    const groupAreasMembersSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/workSpaceMembers/${areaId}/members`).get();
     const members = groupAreasMembersSnapshot.docs.map(doc => (Object.assign({ id: doc.id, name: doc.get('name'), username: doc.get('username') }, doc.data())));
     return members;
 });
-exports.getAreaMembers = getAreaMembers;
+exports.getWorkSpacesMembers = getWorkSpacesMembers;
 const getGroupMembers = (idTelegramGroup) => __awaiter(void 0, void 0, void 0, function* () {
     const groupSnapshot = yield setup_1.database.collection(`team_groups/${idTelegramGroup}/members`).get();
     const members = groupSnapshot.docs.map(doc => (Object.assign({ id: doc.id, name: doc.get('name'), username: doc.get('username') }, doc.data())));
