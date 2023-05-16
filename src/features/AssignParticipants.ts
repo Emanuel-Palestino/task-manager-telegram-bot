@@ -1,5 +1,5 @@
 import { Message } from 'telegraf/typings/core/types/typegram'
-import { Area, Person } from '../models/models'
+import { WorkSpace, Person } from '../models/models'
 import { getAreas, getAreaMembers, getGroupMembers } from '../firebase/api'
 
 function search_member(usernameToFind: String, members: Person[]) {
@@ -10,7 +10,7 @@ function search_member(usernameToFind: String, members: Person[]) {
 	return undefined
 }
 
-function findIdByName(arr: Area[], name: string): string | undefined {
+function findIdByName(arr: WorkSpace[], name: string): string | undefined {
 	const obj = arr.find((item) => item.name === name)
 	return obj ? obj.id : undefined
 }

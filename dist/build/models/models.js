@@ -3,7 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 //Example
 const teamGroup = {
     createdAt: '2023/04/24',
-    areas: {
+    workSpaces: {
         '1234123': {
             name: '',
         },
@@ -11,7 +11,7 @@ const teamGroup = {
             name: '',
         }
     },
-    areasMembers: {
+    workSpaceMembers: {
         'desarrollo': {
             members: {
                 'ouiou': {

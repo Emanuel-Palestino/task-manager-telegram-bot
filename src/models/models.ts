@@ -4,7 +4,7 @@ export interface Person {
 	username: string
 }
 
-export interface Area {
+export interface WorkSpace {
 	id?: string
 	name: string
 }
@@ -18,7 +18,7 @@ export interface Task {
 	}
 }
 
-export interface AreaMembers {
+export interface WorkSpaceMembers {
 	members: {
 		[key: string]: Person
 	}
@@ -27,11 +27,11 @@ export interface AreaMembers {
 export interface TeamGroup {
 	id?: string
 	createdAt: string
-	areas?: {
-		[key: string]: Area
+	workSpaces?: {
+		[key: string]: WorkSpace
 	}
-	areasMembers?: {
-		[key: string]: AreaMembers
+	workSpaceMembers?: {
+		[key: string]: WorkSpaceMembers
 	}
 	tasks?: {
 		[key: string]: Task
@@ -45,7 +45,7 @@ export interface TeamGroup {
 
 const teamGroup: TeamGroup = {
 	createdAt: '2023/04/24',
-	areas: {
+	workSpaces: {
 		'1234123': {
 			name: '',
 
@@ -54,7 +54,7 @@ const teamGroup: TeamGroup = {
 			name: '',
 		}
 	},
-	areasMembers: {
+	workSpaceMembers: {
 		'desarrollo': {
 			members: {
 				'ouiou': {

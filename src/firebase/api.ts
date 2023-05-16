@@ -1,4 +1,4 @@
-import { Area, Person, Task, TeamGroup } from '../models/models'
+import { WorkSpace, Person, Task, TeamGroup } from '../models/models'
 import { database } from './setup'
 
 
@@ -47,14 +47,14 @@ export const createTask = async (idTelegramGroup: string, task: Task): Promise<b
 	return true
 }
 
-export const createArea = async (idTelegramGroup: string, area: Area): Promise<boolean> => {
-	const teamGroupDoc = database.collection('team_groups').doc(idTelegramGroup)
+export const createWorkSpace = async (telegramGroupId: string, workSpace: WorkSpace): Promise<boolean> => {
+	const teamGroupDoc = database.collection('team_groups').doc(telegramGroupId)
 
 	// team group is not registered
 	if (! await isTeamGroupRegistered(teamGroupDoc))
 		return false
 
-	await teamGroupDoc.collection('areas').add(area)
+	await teamGroupDoc.collection('workspaces').add(workSpace)
 	return true
 }
 
@@ -86,9 +86,9 @@ export const addMemberToArea = async (idTelegramGroup: string, member: Person, a
 
 
 /* GET METHODS */
-export const getAreas = async (idTelegramGroup: string): Promise<Area[]> => {
+export const getAreas = async (idTelegramGroup: string): Promise<WorkSpace[]> => {
 	const groupAreasSnapshot = await database.collection(`team_groups/${idTelegramGroup}/areas`).get()
-	const groupAreas: Area[] = groupAreasSnapshot.docs.map(doc => ({
+	const groupAreas: WorkSpace[] = groupAreasSnapshot.docs.map(doc => ({
 		id: doc.id,
 		name: doc.get('name'),
 		...doc.data()
